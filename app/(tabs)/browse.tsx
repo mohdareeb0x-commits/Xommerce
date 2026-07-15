@@ -1,4 +1,7 @@
+import BrowseProducts from "@/components/BrowseProducts";
 import CategoryHeader from "@/components/CategoryHeader";
+import FilterChipSection from "@/components/FilterChipSection";
+import FilterSort from "@/components/FilterSort";
 import { store } from "@/redux/store";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,11 +14,14 @@ const Browse = () => {
       <SafeAreaView className="flex-1">
         <ScrollView
           className="flex-1 mb-5"
-          contentContainerStyle={{ paddingBottom: 20 }}
+          contentContainerStyle={{ paddingBottom: 100 }}
           showsVerticalScrollIndicator={false}
         >
-          <View className="w-auto items-center gap-5">
-            <CategoryHeader />
+          <CategoryHeader />
+          <View className="w-auto top-24 items-center gap-5">
+            <FilterSort />
+            <FilterChipSection />
+            <BrowseProducts />
           </View>
         </ScrollView>
       </SafeAreaView>

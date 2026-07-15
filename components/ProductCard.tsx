@@ -23,7 +23,7 @@ const ProductCard = ({
   badge,
 }: ProductCardProps) => {
   return (
-    <View className="w-44 bg-white rounded-xl">
+    <View className="w-44 min-h-72-96 bg-white rounded-xl">
       <Image
         source={{ uri: image }}
         className="w-full h-40 rounded-t-xl"
@@ -35,11 +35,15 @@ const ProductCard = ({
         </View>
       )}
       <FavouriteButton />
-      <View className="p-3 gap-2">
-        <Text className="text-xs font-semibold text-slate-400">
-          {category.toUpperCase()}
-        </Text>
-        <Text className="text-xs text-black font-medium">{productName}</Text>
+      <View className="p-3 gap-2 min-h-32 justify-between">
+        <View className="gap-2">
+          <Text className="text-xs font-semibold text-slate-400">
+            {category.toUpperCase()}
+          </Text>
+          <Text className="text-sm text-black font-semibold">
+            {productName}
+          </Text>
+        </View>
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-end gap-2 bg">
             <Text className="text-lg text-black font-bold">{price}</Text>
