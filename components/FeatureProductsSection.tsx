@@ -1,15 +1,24 @@
+import { toggleSeeAll } from "@/redux/chipCattegory/chipCattegorySlice";
+import { router } from "expo-router";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
 import ProductCard from "./ProductCard";
 
 const FeatureProductsSection = () => {
+  const dispatch = useDispatch();
   return (
     <View>
       <View className="flex-row justify-between items-center w-11/12 mb-3">
         <Text className="text-lg font-semibold text-slate-800 mb-3">
           Featured Products
         </Text>
-        <Pressable>
+        <Pressable
+          onPress={() => {
+            dispatch(toggleSeeAll(true));
+            router.push("/(tabs)/browse");
+          }}
+        >
           <Text className="text-sm font-semibold text-blue-600 mb-3">
             See All
           </Text>

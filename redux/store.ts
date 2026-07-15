@@ -1,9 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import fillReducer from "./fill/fillSlice";
+import chipCattegoryReducer from "./chipCattegory/chipCattegorySlice";
 
 export const store = configureStore({
   reducer: {
-    fill: fillReducer,
+    chipCattegory: chipCattegoryReducer,
   },
 });
 

@@ -1,12 +1,16 @@
+import { toggle } from "@/redux/chipCattegory/chipCattegorySlice";
+import type { RootState } from "@/redux/store";
 import Ionicons from "@expo/vector-icons/build/Ionicons";
-import React, { useState } from "react";
+import React from "react";
 import { FlatList } from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import CategoryChip from "./CategoryChip";
 
-type ChipCategory =
-  "All" | "Laptops" | "Phones" | "Audio" | "Cameras" | "Smart Home";
-
 const ChipScrollView = () => {
+  const chipCategory = useSelector(
+    (state: RootState) => state.chipCattegory.value,
+  );
+  const dispatch = useDispatch();
   const DATA: {
     label: string;
     icon: keyof typeof Ionicons.glyphMap;
@@ -15,36 +19,35 @@ const ChipScrollView = () => {
     {
       label: "All",
       icon: "grid-outline",
-      onPress: () => setChipCategory("All"),
+      onPress: () => dispatch(toggle("All")),
     },
     {
       label: "Laptops",
       icon: "laptop-outline",
-      onPress: () => setChipCategory("Laptops"),
+      onPress: () => dispatch(toggle("Laptops")),
     },
     {
       label: "Phones",
       icon: "phone-portrait-outline",
-      onPress: () => setChipCategory("Phones"),
+      onPress: () => dispatch(toggle("Phones")),
     },
     {
       label: "Audio",
       icon: "musical-notes-outline",
-      onPress: () => setChipCategory("Audio"),
+      onPress: () => dispatch(toggle("Audio")),
     },
     {
       label: "Cameras",
       icon: "camera-outline",
-      onPress: () => setChipCategory("Cameras"),
+      onPress: () => dispatch(toggle("Cameras")),
     },
     {
       label: "Smart Home",
       icon: "hardware-chip-outline",
-      onPress: () => setChipCategory("Smart Home"),
+      onPress: () => dispatch(toggle("Smart Home")),
     },
   ];
 
-  const [chipCategory, setChipCategory] = useState<ChipCategory>("All");
   return (
     <FlatList
       horizontal
