@@ -1,6 +1,6 @@
 import React from "react";
 import { TextInput, View } from "react-native";
-import HeaderIcon from "./HeaderIcon";
+import HeaderIcon from "../headers/HeaderIcon";
 
 interface SearchBarProps {
   placeHolder: string;

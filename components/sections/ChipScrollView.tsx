@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/build/Ionicons";
 import React from "react";
 import { FlatList } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
-import CategoryChip from "./CategoryChip";
+import CategoryChip from "../buttons/CattegoryChip";
 
 const ChipScrollView = () => {
   const chipCategory = useSelector(

@@ -1,7 +1,7 @@
 import Ionicons from "@expo/vector-icons/build/Ionicons";
 import React from "react";
 import { Image, Text, View } from "react-native";
-import FavouriteButton from "./FavouriteButton";
+import FavouriteButton from "../buttons/FavouriteButton";
 
 interface ProductCardProps {
   image: string;

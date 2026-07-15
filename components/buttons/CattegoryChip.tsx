@@ -9,7 +9,7 @@ interface CategoryChipProps {
   isActive?: boolean;
 }
 
-const CategoryChip = ({
+const CattegoryChip = ({
   label,
   onPress,
   icon,
@@ -37,4 +37,4 @@ const CategoryChip = ({
   );
 };
 
-export default CategoryChip;
+export default CattegoryChip;

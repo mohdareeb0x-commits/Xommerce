@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Text, View } from "react-native";
-import FilterButton from "./FilterButton";
+import FilterButton from "../buttons/FilterButton";
 
 type ButtonActiveType = "filter" | "sort" | "both" | null;
 

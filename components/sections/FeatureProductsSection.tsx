@@ -3,7 +3,7 @@ import { router } from "expo-router";
 import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
-import ProductCard from "./ProductCard";
+import ProductCard from "../cards/ProductCard";
 
 const FeatureProductsSection = () => {
   const dispatch = useDispatch();

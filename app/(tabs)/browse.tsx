@@ -1,7 +1,7 @@
-import BrowseProducts from "@/components/BrowseProducts";
-import CategoryHeader from "@/components/CategoryHeader";
-import FilterChipSection from "@/components/FilterChipSection";
-import FilterSort from "@/components/FilterSort";
+import CategoryHeader from "@/components/headers/CategoryHeader";
+import BrowseProducts from "@/components/sections/BrowseProducts";
+import FilterChipSection from "@/components/sections/FilterChipSection";
+import FilterSort from "@/components/sections/FilterSort";
 import { store } from "@/redux/store";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";

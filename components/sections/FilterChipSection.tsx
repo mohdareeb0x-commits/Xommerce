@@ -1,7 +1,7 @@
 import React from "react";
 import { ScrollView, View } from "react-native";
-import ButtonOutline from "./ButtonOutline";
-import FilterChip from "./FilterChip";
+import ButtonOutline from "../buttons/ButtonOutline";
+import FilterChip from "../buttons/FilterChip";
 
 const FilterChipSection = () => {
   return (

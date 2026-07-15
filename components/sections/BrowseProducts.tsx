@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import ProductCard from "./ProductCard";
+import ProductCard from "../cards/ProductCard";
 
 const BrowseProducts = () => {
   return (

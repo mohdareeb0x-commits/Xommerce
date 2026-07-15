@@ -1,9 +1,9 @@
-import ChipScrollView from "@/components/ChipScrollView";
-import FeatureProductsSection from "@/components/FeatureProductsSection";
-import Header from "@/components/Header";
-import HeroBanner from "@/components/HeroBanner";
-import PromoBanner from "@/components/PromoBanner";
-import SearchBar from "@/components/SearchBar";
+import HeroBanner from "@/components/cards/HeroBanner";
+import PromoBanner from "@/components/cards/PromoBanner";
+import Header from "@/components/headers/Header";
+import SearchBar from "@/components/inputs/SearchBar";
+import ChipScrollView from "@/components/sections/ChipScrollView";
+import FeatureProductsSection from "@/components/sections/FeatureProductsSection";
 import { store } from "@/redux/store";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
