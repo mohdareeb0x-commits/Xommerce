@@ -5,7 +5,8 @@ import SearchBar from "@/components/inputs/SearchBar";
 import ChipScrollView from "@/components/sections/ChipScrollView";
 import FeatureProductsSection from "@/components/sections/FeatureProductsSection";
 import { store } from "@/redux/store";
-import { ScrollView, View } from "react-native";
+import { router } from "expo-router";
+import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import "../global.css";
@@ -28,6 +29,9 @@ export default function Index() {
             </View>
             <FeatureProductsSection />
             <PromoBanner />
+            <Pressable onPress={() => router.push("/createProductScreen")}>
+              <Text>Create Product</Text>
+            </Pressable>
           </View>
         </ScrollView>
       </SafeAreaView>

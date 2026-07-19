@@ -1,13 +1,38 @@
+import { UpdateProductWishList } from "@/service/productApi";
 import FontAwesome from "@expo/vector-icons/build/FontAwesome";
 import React, { useState } from "react";
 import { Pressable, View } from "react-native";
 
-const FavouriteButton = () => {
-  const [isFavourite, setIsFavourite] = useState(false);
+interface FavouriteButtonProps {
+  productId: string;
+  isWishlist: boolean;
+}
+
+interface OnPressProps {
+  productId: string;
+  isFavourite: boolean;
+  setIsFavourite: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const handleOnpress = async (
+  setIsFavourite: React.Dispatch<React.SetStateAction<boolean>>,
+  isFavourite: boolean,
+  productId: string,
+) => {
+  const data = {
+    id: productId,
+    isFav: !isFavourite,
+  };
+  await UpdateProductWishList(data);
+  setIsFavourite(!isFavourite);
+};
+
+const FavouriteButton = ({ productId, isWishlist }: FavouriteButtonProps) => {
+  const [isFavourite, setIsFavourite] = useState(isWishlist);
   return (
     <Pressable
       className="absolute z-10 right-2 top-2"
-      onPress={() => setIsFavourite(!isFavourite)}
+      onPress={() => handleOnpress(setIsFavourite, isFavourite, productId)}
     >
       <View className="rounded-full bg-white p-2 items-center justify-center border border-gray-300">
         <FontAwesome

@@ -5,20 +5,24 @@ import FavouriteButton from "../buttons/FavouriteButton";
 
 interface ProductCardProps {
   image: string;
+  productId: string;
   category: string;
   productName: string;
   price: string;
   discountedPrice?: string;
   rating: number;
   badge?: string;
+  isFauvorite: boolean;
 }
 
 const ProductCard = ({
+  productId,
   image,
   category,
   productName,
   price,
   discountedPrice,
+  isFauvorite,
   rating,
   badge,
 }: ProductCardProps) => {
@@ -34,7 +38,7 @@ const ProductCard = ({
           <Text className="text-xs color-white">{badge}</Text>
         </View>
       )}
-      <FavouriteButton />
+      <FavouriteButton productId={productId} isWishlist={isFauvorite} />
       <View className="p-3 gap-2 min-h-32 justify-between">
         <View className="gap-2">
           <Text className="text-xs font-semibold text-slate-400">
@@ -46,10 +50,10 @@ const ProductCard = ({
         </View>
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-end gap-2 bg">
-            <Text className="text-lg text-black font-bold">{price}</Text>
+            <Text className="text-lg text-black font-bold">${price}</Text>
             {discountedPrice && (
               <Text className="text-xs text-slate-400 font-medium line-through my-1">
-                {discountedPrice}
+                ${discountedPrice}
               </Text>
             )}
           </View>

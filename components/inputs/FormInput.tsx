@@ -1,0 +1,29 @@
+import { ProductForm } from "@/app/createProductScreen";
+import React from "react";
+import { Control, Controller } from "react-hook-form";
+import { TextInput } from "react-native";
+
+type InputProps = {
+  control: Control<ProductForm>;
+  name: keyof ProductForm;
+  placeholder: string;
+};
+
+export function FormInput({ control, name, placeholder }: InputProps) {
+  return (
+    <Controller
+      control={control}
+      name={name}
+      render={({ field: { value, onChange } }) => (
+        <TextInput
+          className="border border-gray-300 rounded-xl px-5 py-3 text-lg"
+          value={String(value)}
+          onChangeText={onChange}
+          placeholder={placeholder}
+        />
+      )}
+    />
+  );
+}
+
+export default FormInput;
