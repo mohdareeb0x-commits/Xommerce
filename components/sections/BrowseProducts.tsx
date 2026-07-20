@@ -1,21 +1,41 @@
+import { getAllCategories } from "@/service/categroyApi";
 import { GetProducts } from "@/service/productApi";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View } from "react-native";
 import PaginationButton from "../buttons/PaginationButton";
 import ProductCard from "../cards/ProductCard";
+
+interface image {
+  url: string;
+  alt: string;
+  isPrimary: boolean;
+}
+
+type categories = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  image: string;
+  icon: string;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+};
 
 type product = {
   id: string;
   sku?: string;
   tag?: string;
   name: string;
-  image: string;
+  images: image[];
   rating: number;
   category: string;
   description?: string;
   is_favourite: boolean;
-  original_price: number;
-  discounted_price: number;
+  price: number;
+  discountedPrice: number;
+  discount: number;
 };
 
 const GetData = async (
@@ -43,28 +63,55 @@ const GetData = async (
   }
 };
 
+const GetCat = async (
+  setCategories: React.Dispatch<React.SetStateAction<categories[]>>,
+) => {
+  try {
+    const data = await getAllCategories();
+    setCategories(data);
+  } catch (error) {
+    // if (error == "Page limit exceeded") {
+    //   setPage(page - 1);
+    // }
+  }
+};
+
 const BrowseProducts = () => {
   const limitReached = useRef<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<product[]>([]);
+  const [categories, setCategories] = useState<categories[]>([]);
+
+  const categoryMap = useMemo(() => {
+    return Object.fromEntries(
+      categories.map((category) => [category.id, category.name]),
+    );
+  }, [categories]);
+
   useEffect(() => {
     GetData(setProducts, setPage, products, page, limitReached);
+    GetCat(setCategories);
+    console.log("categories", categoryMap);
     console.log("limit in useeffect", limitReached.current);
   }, [page]);
 
   return (
     <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
       {products.map((item) =>
-        item.original_price ? (
+        item.discount !== 0 ? (
           <ProductCard
             key={item.id}
             productId={item.id}
             isFauvorite={item.is_favourite}
-            image={item.image}
-            category={item.category}
+            image={
+              item.images.find((img) => img.isPrimary)?.url ??
+              item.images[0]?.url ??
+              ""
+            }
+            category={categoryMap[item.category] ?? item.category}
             productName={item.name}
-            price={String(item.discounted_price)}
-            discountedPrice={String(item.original_price)}
+            price={String(Math.floor(item.discountedPrice))}
+            discountedPrice={String(Math.floor(item.price))}
             rating={item.rating}
             badge={item.tag}
           />
@@ -72,10 +119,14 @@ const BrowseProducts = () => {
           <ProductCard
             key={item.id}
             productId={item.id}
-            image={item.image}
-            category={item.category}
+            image={
+              item.images.find((img) => img.isPrimary)?.url ??
+              item.images[0]?.url ??
+              ""
+            }
+            category={categoryMap[item.category] ?? item.category}
             productName={item.name}
-            price={String(item.discounted_price)}
+            price={String(Math.floor(item.discountedPrice))}
             isFauvorite={item.is_favourite}
             rating={item.rating}
             badge={item.tag}
