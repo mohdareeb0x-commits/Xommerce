@@ -1,22 +1,26 @@
+import CustomAlert from "@/components/cards/CustomAlert";
+import DefaultHeader from "@/components/headers/DefaultHeader";
 import FormInput from "@/components/inputs/FormInput";
 import { FormInputNumeric } from "@/components/inputs/FormInputNumeric";
 import { getAllCategories } from "@/service/categroyApi";
+import { checkInternet } from "@/service/checkInternet";
 import { uploadImage } from "@/service/imageUploadApi";
 import { CreateProduct } from "@/service/productApi";
+import Feather from "@expo/vector-icons/build/Feather";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
 import React, { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
-    ActivityIndicator,
-    FlatList,
-    Image,
-    Pressable,
-    ScrollView,
-    Switch,
-    Text,
-    TextInput,
-    View,
+  ActivityIndicator,
+  FlatList,
+  Image,
+  Pressable,
+  ScrollView,
+  Switch,
+  Text,
+  TextInput,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -46,6 +50,8 @@ export type ProductForm = {
   images: ProductImage[];
   isActive: boolean;
 };
+
+const MAX_IMAGES = 5;
 
 export default function CreateProductScreen() {
   const { control, watch, setValue, handleSubmit } = useForm<ProductForm>({
@@ -102,6 +108,11 @@ export default function CreateProductScreen() {
 
     if (result.canceled) return;
 
+    if (result.assets.length > MAX_IMAGES) {
+      alert(`You can select a maximum of ${MAX_IMAGES} images.`);
+      return;
+    }
+
     const selected = result.assets.map((asset, index) => ({
       url: asset.uri,
       alt: "",
@@ -111,28 +122,47 @@ export default function CreateProductScreen() {
     setValue("images", selected);
   };
 
+  type CreateError =
+    "internet error" | "create failed" | "images not uploaded" | null;
+
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [createError, setCreateError] = useState<CreateError>(null);
+  const [catErr, setCatErr] = useState<boolean>(false);
+  console.log("CREATE ERROR", createError);
 
   const onSubmit = async (data: ProductForm) => {
-    console.log(data);
-    const uploadedImages = await Promise.all(
-      data.images.map(async (img) => ({
-        url: await uploadImage(img.url),
-        alt: img.alt,
-        isPrimary: img.isPrimary,
-      })),
-    );
-    data.images = uploadedImages;
-    CreateProduct(data);
-    // await uploadImage(data.i)
+    try {
+      setIsLoading(true);
 
-    /*
-    Upload images
+      const isInternetConnected = await checkInternet();
+      if (!isInternetConnected) {
+        throw new Error("No Internet Connection");
+      }
 
+      console.log(data);
+      if (data.images.length === 0) {
+        throw new Error("Images not selected;");
+      }
+      const uploadedImages = await Promise.all(
+        data.images.map(async (img) => ({
+          url: await uploadImage(img.url),
+          alt: img.alt,
+          isPrimary: img.isPrimary,
+        })),
+      );
+      data.images = uploadedImages;
+      CreateProduct(data);
+    } catch (err) {
+      console.log("onsubmit err", err);
 
-
-    await axios.post("/products", data);
-    */
+      if (err == "No Internet Connection") {
+        setCreateError("internet error");
+      } else {
+        setCreateError("create failed");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   };
   type Category = {
     id: string;
@@ -143,137 +173,131 @@ export default function CreateProductScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
-    getAllCategories().then(setCategories);
+    const isConnected = checkInternet();
+    if (!isConnected) {
+      setCreateError("internet error");
+      return;
+    }
+    const fetchCategories = async () => {
+      try {
+        const result = await getAllCategories();
+        if (result === "Can't Fetch") {
+          throw new Error("Unable to fetch cat");
+        }
+        setCategories(result);
+      } catch (err) {
+        console.log("GET ALL CaT ERR", err);
+        setCatErr(true);
+      }
+    };
+
+    fetchCategories();
   }, []);
 
   return (
-    <SafeAreaView>
-      <ScrollView contentContainerStyle={{ paddingBottom: 40 }}>
-        <View className="w-10/12 self-center gap-3">
+    <SafeAreaView className="justify-center">
+      {createError === "create failed" && (
+        <CustomAlert
+          alertMsg="Unable to create product"
+          onPress={() => setCreateError(null)}
+        />
+      )}
+      {createError === "internet error" && (
+        <CustomAlert
+          alertMsg="No internet connection"
+          onPress={() => setCreateError(null)}
+        />
+      )}
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 40 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <DefaultHeader headerLabel="Create Product" />
+        <View className="w-10/12 pt-24 self-center gap-3">
           <Text className="text-2xl font-bold">Product Details</Text>
 
           <View className="gap-2">
-            <Text className="text-lg font-medium">Product Name</Text>
+            <Text className="text-lg font-medium">Product Name*</Text>
             <FormInput
               control={control}
               name="name"
               placeholder="Product Name"
+              required="Product Name is required"
             />
           </View>
 
           <View className="gap-2">
-            <Text className="text-lg font-medium">SKU</Text>
+            <Text className="text-lg font-medium">SKU*</Text>
 
-            <FormInput control={control} name="sku" placeholder="SKU" />
+            <FormInput
+              control={control}
+              name="sku"
+              placeholder="SKU"
+              required="SKU is required"
+            />
           </View>
           <View className="gap-2">
-            <Text className="text-lg font-medium">Description</Text>
+            <Text className="text-lg font-medium">Description*</Text>
 
             <FormInput
               control={control}
               name="description"
               placeholder="Description"
+              required="Product description is required"
             />
           </View>
           <View className="gap-2">
-            <Text className="text-lg font-medium">Category</Text>
+            <Text className="text-lg font-medium">Category*</Text>
+            <View className="border-gray-300 border rounded-xl">
+              <Controller
+                control={control}
+                name="category"
+                rules={{
+                  required: "Category field is required",
+                }}
+                render={({ field }) => (
+                  <Picker
+                    selectedValue={field.value}
+                    onValueChange={field.onChange}
+                  >
+                    <Picker.Item label="Select Category" value="" />
 
-            {/* <FormInput
-              control={control}
-              name="category"
-              placeholder="Category"
-            /> */}
-            <Controller
-              control={control}
-              name="category"
-              render={({ field }) => (
-                <Picker
-                  selectedValue={field.value}
-                  onValueChange={field.onChange}
-                >
-                  <Picker.Item label="Select Category" value="" />
-
-                  {categories.map((category) => (
-                    <Picker.Item
-                      key={category.id}
-                      label={category.name}
-                      value={category.id}
-                    />
-                  ))}
-                </Picker>
-              )}
-            />
+                    {catErr === false &&
+                      categories.map((category) => (
+                        <Picker.Item
+                          key={category.id}
+                          label={category.name}
+                          value={category.id}
+                        />
+                      ))}
+                  </Picker>
+                )}
+              />
+            </View>
           </View>
-          {/* <View className="gap-2">
-            <Text className="text-lg font-medium">Subcategory</Text>
 
-            <FormInput
-              control={control}
-              name="subcategory"
-              placeholder="Subcategory"
-            />
-          </View> */}
           <View className="gap-2">
-            <Text className="text-lg font-medium">Price</Text>
+            <Text className="text-lg font-medium">Price - $*</Text>
 
             <FormInputNumeric control={control} name="price" />
           </View>
           <View className="gap-2">
-            <Text className="text-lg font-medium">Discount</Text>
+            <Text className="text-lg font-medium">Discount - %</Text>
 
             <FormInputNumeric control={control} name="discount" />
           </View>
-          {/* <Controller
-          control={control}
-          name="discount"
-          render={({ field }) => (
-            <TextInput
-              keyboardType="numeric"
-              value={String(field.value)}
-              onChangeText={(text) => field.onChange(Number(text))}
-            />
-          )}
-        /> */}
 
           <View className="gap-2">
-            <Text className="text-lg font-medium">Discounted Price</Text>
+            <Text className="text-lg font-medium">Discounted Price - $</Text>
 
             <FormInputNumeric control={control} name="discountedPrice" />
           </View>
-          {/* <Controller
-        control={control}
-        name="discountedPrice"
-        render={({ field }) => (
-          <TextInput editable={false} value={String(field.value)} />
-        )}
-      /> */}
 
           <View className="gap-2">
             <Text className="text-lg font-medium">Stock</Text>
 
             <FormInputNumeric control={control} name="stock" />
           </View>
-          {/* <Controller
-        control={control}
-        name="stock"
-        render={({ field }) => (
-          <TextInput
-            keyboardType="numeric"
-            value={String(field.value)}
-            onChangeText={(text) => field.onChange(Number(text))}
-          />
-        )}
-      /> */}
-
-          {/* <Text className="text-lg font-medium">Seller</Text>
-
-          <Controller
-            control={control}
-            name="seller"
-            render={({ field }) => (
-              <TextInput value={field.value} onChangeText={field.onChange} />
-            )}
-          /> */}
 
           <View className="gap-2">
             <Text className="text-lg font-medium">Tags</Text>
@@ -282,19 +306,9 @@ export default function CreateProductScreen() {
               control={control}
               name="tags"
               placeholder="apple,laptop,m3"
+              required="tags are required"
             />
           </View>
-          {/* <Controller
-        control={control}
-        name="tags"
-        render={({ field }) => (
-          <TextInput
-            placeholder="apple,laptop,m3"
-            value={field.value}
-            onChangeText={field.onChange}
-          />
-        )}
-      /> */}
 
           <View className="flex-row items-center my-5">
             <Text className="text-lg font-medium">Active</Text>
@@ -308,50 +322,41 @@ export default function CreateProductScreen() {
             />
           </View>
 
-          <Text className="text-lg font-medium">Images</Text>
-
-          {/* <TouchableOpacity
-            onPress={pickImages}
-            style={{
-              backgroundColor: "#007AFF",
-              padding: 15,
-              borderRadius: 8,
-              marginVertical: 10,
-            }}
-          >
-            <Text
-              style={{
-                color: "white",
-                textAlign: "center",
-              }}
-            >
-              Pick Images
+          <View className="gap-4">
+            <Text className="text-lg font-medium">
+              Images (Maximum 5 Images)*
             </Text>
-          </TouchableOpacity> */}
-          <Pressable
-            className="items-center bg-black py-3 rounded-xl"
-            onPress={pickImages}
-          >
-            <Text className="font-bold color-white text-lg">Pick Images</Text>
-          </Pressable>
+            <View className="flex-row gap-2 items-center">
+              <Feather name="info" size={15} color="#ea580c" />
+              <Text className="color-orange-600 text-sm">
+                Upload in 1:1 resolution for better experience
+              </Text>
+            </View>
 
-          <FlatList
-            horizontal
-            data={images}
-            keyExtractor={(item) => item.url}
-            renderItem={({ item }) => (
-              <Image
-                source={{ uri: item.url }}
-                style={{
-                  width: 100,
-                  height: 100,
-                  borderRadius: 10,
-                  marginRight: 10,
-                }}
-              />
-            )}
-          />
+            <Pressable
+              className="items-center bg-black py-3 rounded-xl"
+              onPress={pickImages}
+            >
+              <Text className="font-bold color-white text-lg">Pick Images</Text>
+            </Pressable>
 
+            <FlatList
+              horizontal
+              data={images}
+              keyExtractor={(item) => item.url}
+              renderItem={({ item }) => (
+                <Image
+                  source={{ uri: item.url }}
+                  style={{
+                    width: 100,
+                    height: 100,
+                    borderRadius: 10,
+                    marginRight: 10,
+                  }}
+                />
+              )}
+            />
+          </View>
           <Text className="text-lg font-medium">Specifications</Text>
 
           {fields.map((field, index) => (
@@ -382,7 +387,6 @@ export default function CreateProductScreen() {
                 )}
               />
 
-              {/* <Button title="Remove" onPress={() => remove(index)} /> */}
               <Pressable
                 className="border-2 items-center border-blue-500 py-2 rounded-xl"
                 onPress={() => remove(index)}
@@ -392,15 +396,6 @@ export default function CreateProductScreen() {
             </View>
           ))}
 
-          {/* <Button
-            title="Add Specification"
-            onPress={() =>
-              append({
-                key: "",
-                value: "",
-              })
-            }
-          /> */}
           <Pressable
             className="border-2 items-center border-blue-500 py-2 rounded-xl"
             onPress={() =>
@@ -418,12 +413,9 @@ export default function CreateProductScreen() {
           <View style={{ height: 30 }} />
 
           <Pressable
+            disabled={isLoading}
             className="items-center bg-blue-500 py-3 rounded-xl"
-            onPress={
-              //   setIsLoading(true);
-              handleSubmit(onSubmit)
-              //   setIsLoading(false);
-            }
+            onPress={handleSubmit(onSubmit)}
           >
             {isLoading ? (
               <ActivityIndicator color="white" />

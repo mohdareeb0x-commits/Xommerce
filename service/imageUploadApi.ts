@@ -1,23 +1,28 @@
 export const uploadImage = async (uri: string) => {
   const formData = new FormData();
 
-  formData.append("file", {
-    uri,
-    type: "image/jpeg",
-    name: "product.jpg",
-  } as any);
+  try {
+    formData.append("file", {
+      uri,
+      type: "image/jpeg",
+      name: "product.jpg",
+    } as any);
 
-  formData.append("upload_preset", "products");
+    formData.append("upload_preset", "xommerce_unsigned");
 
-  const response = await fetch(
-    "https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload",
-    {
-      method: "POST",
-      body: formData,
-    },
-  );
+    const response = await fetch(
+      "https://api.cloudinary.com/v1_1/xvysy0ca/image/upload",
+      {
+        method: "POST",
+        body: formData,
+      },
+    );
 
-  const data = await response.json();
-
-  return data.secure_url;
+    const data = await response.json();
+    console.log("URL: ", data);
+    return data.secure_url;
+  } catch (err) {
+    console.log("IMAGE UPLOAD ERR", err);
+    throw new Error("Unable to upload photos");
+  }
 };
