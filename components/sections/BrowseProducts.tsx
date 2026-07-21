@@ -1,8 +1,10 @@
 import useHealth from "@/hooks/useHealth";
+import { changeApiState } from "@/redux/apiHealthCheck/healthCheckSlice";
 import { getAllCategories } from "@/service/categroyApi";
 import { GetProducts } from "@/service/productApi";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
+import { useDispatch } from "react-redux";
 import PaginationButton from "../buttons/PaginationButton";
 import ProductCard from "../cards/ProductCard";
 import LoadingSkeletonSection from "./LoadingSkeletonSection";
@@ -96,9 +98,12 @@ const BrowseProducts = () => {
   const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState<boolean>();
 
+  const dispatch = useDispatch();
+
   const isApiUp = useHealth();
 
   const handleReload = () => {
+    dispatch(changeApiState(true));
     setPage(1); // Reset to first page
     setIsLoading(true); // Show loading
     limitReached.current = false; // Reset pagination limit
@@ -109,7 +114,7 @@ const BrowseProducts = () => {
       await GetCat(setCategories, setError);
     }
     getData();
-  }, []);
+  }, [isApiUp]);
 
   useEffect(() => {
     async function getData() {
@@ -132,7 +137,7 @@ const BrowseProducts = () => {
   }, [page]);
 
   const categoryMap = useMemo(() => {
-    if (isApiUp) {
+    if (isApiUp && !error) {
       return Object.fromEntries(
         categories.map((category) => [category.id, category.name]),
       );
@@ -149,7 +154,7 @@ const BrowseProducts = () => {
         </Text>
         <Pressable
           onPress={
-            () => handleReload
+            () => handleReload()
             // setPage(1);
             // setIsLoading(true);
             // async function getData() {
@@ -183,7 +188,7 @@ const BrowseProducts = () => {
         <Text className="text-xl font-bold">Unable to connect to server</Text>
         <Pressable
           onPress={
-            () => handleReload
+            () => handleReload()
             //   setPage(1);
             //   setIsLoading(true);
             //   async function getData() {
@@ -223,6 +228,7 @@ const BrowseProducts = () => {
   return (
     <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
       {isApiUp &&
+        !error &&
         products.map((item) =>
           item.discount !== 0 ? (
             <ProductCard
@@ -325,6 +331,7 @@ const BrowseProducts = () => {
           <PaginationButton
             disabled={page === 1}
             onPress={() => {
+              changeApiState(true);
               if (page === 1) {
                 return;
               }
@@ -336,6 +343,7 @@ const BrowseProducts = () => {
           <PaginationButton
             disabled={limitReached.current}
             onPress={() => {
+              changeApiState(true);
               if (limitReached.current) {
                 return;
               }
