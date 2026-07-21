@@ -91,11 +91,12 @@ const BrowseProducts = () => {
   // );
 
   const limitReached = useRef<boolean>(false);
+  const isReload = useRef<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<product[]>([]);
   const [categories, setCategories] = useState<categories[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isReload, setIsReload] = useState(false);
+  // const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState<boolean>();
 
   const dispatch = useDispatch();
@@ -103,9 +104,10 @@ const BrowseProducts = () => {
   const isApiUp = useHealth();
 
   const handleReload = () => {
+    isReload.current = !isReload.current;
     dispatch(changeApiState(true));
     setPage(1); // Reset to first page
-    setIsLoading(true); // Show loading
+    // setIsLoading(true); // Show loading
     limitReached.current = false; // Reset pagination limit
   };
 
@@ -114,7 +116,7 @@ const BrowseProducts = () => {
       await GetCat(setCategories, setError);
     }
     getData();
-  }, [isApiUp]);
+  }, [isReload.current]);
 
   useEffect(() => {
     async function getData() {
@@ -130,6 +132,7 @@ const BrowseProducts = () => {
       );
       console.log("UP: ", isApiUp);
       console.log("categories", categories);
+      console.log("data", products);
       console.log("limit in useeffect", limitReached.current);
       setIsLoading(false);
     }
