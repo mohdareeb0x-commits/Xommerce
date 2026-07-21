@@ -46,6 +46,8 @@ const GetData = async (
   products: product[],
   page: number,
   limitReached: React.RefObject<boolean>,
+
+  setError: React.Dispatch<React.SetStateAction<boolean | undefined>>,
 ) => {
   // const timeout = setTimeout(async () => {
   try {
@@ -63,6 +65,7 @@ const GetData = async (
     // if (error == "Page limit exceeded") {
     //   setPage(page - 1);
     // }
+    setError(true);
   }
   // }, 100);
   // clearTimeout(timeout);
@@ -70,14 +73,13 @@ const GetData = async (
 
 const GetCat = async (
   setCategories: React.Dispatch<React.SetStateAction<categories[]>>,
+  setError: React.Dispatch<React.SetStateAction<boolean | undefined>>,
 ) => {
   try {
     const data = await getAllCategories();
     setCategories(data);
   } catch (error) {
-    // if (error == "Page limit exceeded") {
-    //   setPage(page - 1);
-    // }
+    setError(true);
   }
 };
 
@@ -92,14 +94,35 @@ const BrowseProducts = () => {
   const [categories, setCategories] = useState<categories[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isReload, setIsReload] = useState(false);
+  const [error, setError] = useState<boolean>();
 
   const isApiUp = useHealth();
+
+  const handleReload = () => {
+    setPage(1); // Reset to first page
+    setIsLoading(true); // Show loading
+    limitReached.current = false; // Reset pagination limit
+  };
+
+  useEffect(() => {
+    async function getData() {
+      await GetCat(setCategories, setError);
+    }
+    getData();
+  }, []);
+
   useEffect(() => {
     async function getData() {
       setIsLoading(true);
 
-      await GetCat(setCategories);
-      await GetData(setProducts, setPage, products, page, limitReached);
+      await GetData(
+        setProducts,
+        setPage,
+        products,
+        page,
+        limitReached,
+        setError,
+      );
       console.log("UP: ", isApiUp);
       console.log("categories", categories);
       console.log("limit in useeffect", limitReached.current);
@@ -125,11 +148,62 @@ const BrowseProducts = () => {
           Looks like server is having a problem
         </Text>
         <Pressable
-          onPress={() => {
-            setIsReload(true);
-            setIsReload(false);
-            console.log(isReload);
-          }}
+          onPress={
+            () => handleReload
+            // setPage(1);
+            // setIsLoading(true);
+            // async function getData() {
+            //   await GetCat(setCategories, setError);
+            //   await GetData(
+            //     setProducts,
+            //     setPage,
+            //     products,
+            //     page,
+            //     limitReached,
+            //     setError,
+            //   );
+            // }
+            // setIsLoading(false);
+            // getData();
+            // setIsReload(true);
+            // setIsReload(false);
+            // console.log(isReload);
+          }
+          className="border bg-white border-blue-500 px-4 py-2 rounded-full"
+        >
+          <Text className="color-blue-500 font-medium">Reload</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  if (error) {
+    return (
+      <View className="items-center gap-2 w-full h-96 justify-center">
+        <Text className="text-xl font-bold">Unable to connect to server</Text>
+        <Pressable
+          onPress={
+            () => handleReload
+            //   setPage(1);
+            //   setIsLoading(true);
+            //   async function getData() {
+            //     await GetCat(setCategories, setError);
+            //     await GetData(
+            //       setProducts,
+            //       setPage,
+            //       products,
+            //       page,
+            //       limitReached,
+            //       setError,
+            //     );
+            //   }
+            //   setIsLoading(false);
+            //   getData();
+            //   // setIsReload(true);
+            //   // setIsReload(false);
+            //   // console.log(isReload);
+            // }
+          }
           className="border border-blue-500 px-4 py-2 rounded-full"
         >
           <Text className="color-blue-500 font-medium">Reload</Text>
@@ -162,8 +236,8 @@ const BrowseProducts = () => {
               }
               category={categoryMap[item.category] ?? item.category}
               productName={item.name}
-              price={String(Math.floor(item.discountedPrice))}
-              discountedPrice={String(Math.floor(item.price))}
+              price={String(Math.floor(item.price))}
+              discountedPrice={String(Math.floor(item.discountedPrice))}
               rating={item.rating}
               badge={item.tag}
             />
@@ -178,7 +252,7 @@ const BrowseProducts = () => {
               }
               category={categoryMap[item.category] ?? item.category}
               productName={item.name}
-              price={String(Math.floor(item.discountedPrice))}
+              discountedPrice={String(Math.floor(item.discountedPrice))}
               isFauvorite={item.is_favourite}
               rating={item.rating}
               badge={item.tag}

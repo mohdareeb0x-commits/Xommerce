@@ -1,5 +1,4 @@
 import Ionicons from "@expo/vector-icons/build/Ionicons";
-import React from "react";
 import { Image, Text, View } from "react-native";
 import FavouriteButton from "../buttons/FavouriteButton";
 
@@ -8,8 +7,8 @@ interface ProductCardProps {
   productId: string;
   category: string;
   productName: string;
-  price: string;
-  discountedPrice?: string;
+  price?: string;
+  discountedPrice: string;
   rating: number;
   badge?: string;
   isFauvorite: boolean;
@@ -50,10 +49,12 @@ const ProductCard = ({
         </View>
         <View className="flex-row items-center justify-between">
           <View className="flex-row items-end gap-2 bg">
-            <Text className="text-lg text-black font-bold">${price}</Text>
-            {discountedPrice && (
+            <Text className="text-lg text-black font-bold">
+              ${discountedPrice}
+            </Text>
+            {price && (
               <Text className="text-xs text-slate-400 font-medium line-through my-1">
-                ${discountedPrice}
+                ${price}
               </Text>
             )}
           </View>
