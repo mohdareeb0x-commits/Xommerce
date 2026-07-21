@@ -44,8 +44,6 @@ type product = {
 
 const GetData = async (
   setProducts: React.Dispatch<React.SetStateAction<product[]>>,
-  setPage: React.Dispatch<React.SetStateAction<number>>,
-  products: product[],
   page: number,
   limitReached: React.RefObject<boolean>,
 
@@ -91,7 +89,7 @@ const BrowseProducts = () => {
   // );
 
   const limitReached = useRef<boolean>(false);
-  const isReload = useRef<boolean>(false);
+  const [reloadCount, setReloadCount] = useState(0);
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<product[]>([]);
   const [categories, setCategories] = useState<categories[]>([]);
@@ -104,7 +102,6 @@ const BrowseProducts = () => {
   const isApiUp = useHealth();
 
   const handleReload = () => {
-    isReload.current = !isReload.current;
     dispatch(changeApiState(true));
     setPage(1); // Reset to first page
     // setIsLoading(true); // Show loading
@@ -116,20 +113,13 @@ const BrowseProducts = () => {
       await GetCat(setCategories, setError);
     }
     getData();
-  }, [isReload.current]);
+  }, [reloadCount, isApiUp]);
 
   useEffect(() => {
     async function getData() {
       setIsLoading(true);
 
-      await GetData(
-        setProducts,
-        setPage,
-        products,
-        page,
-        limitReached,
-        setError,
-      );
+      await GetData(setProducts, page, limitReached, setError);
       console.log("UP: ", isApiUp);
       console.log("categories", categories);
       console.log("data", products);
@@ -334,7 +324,6 @@ const BrowseProducts = () => {
           <PaginationButton
             disabled={page === 1}
             onPress={() => {
-              changeApiState(true);
               if (page === 1) {
                 return;
               }
@@ -346,7 +335,6 @@ const BrowseProducts = () => {
           <PaginationButton
             disabled={limitReached.current}
             onPress={() => {
-              changeApiState(true);
               if (limitReached.current) {
                 return;
               }

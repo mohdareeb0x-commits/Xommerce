@@ -20,45 +20,20 @@ export const GetProducts = async (
     params as unknown as Record<string, string>,
   ).toString();
 
-  let limitExceeded: boolean = false;
-
   try {
-    const response = await fetch(totalProductsUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const result = await response.json();
-    if (params.page >= result.total_pages) {
-      limitExceeded = true;
-    }
+    const [prodResponse, totalResponse] = await Promise.all([
+      fetch(productUrl, { method: "GET" }),
+      fetch(totalProductsUrl, { method: "GET" }),
+    ]);
+
+    const prodData = await prodResponse.json();
+    const totalData = await totalResponse.json();
+
+    const limitExceeded = params.page >= totalData.total_pages;
+    return [prodData, limitExceeded];
   } catch (error) {
     console.log("Error in api", error);
-  }
-
-  try {
-    const response = await fetch(productUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    const result = await response.json();
-    if (result === null) {
-      throw new Error("Data is null");
-    }
-    console.log("Result:", result);
-    return [result, limitExceeded];
-  } catch (error) {
-    console.log("Error in api", error);
-    return ["Error fetching products", null];
+    return [[], null];
   }
 };
 
