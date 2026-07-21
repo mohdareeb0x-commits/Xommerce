@@ -12,6 +12,21 @@ import { Provider } from "react-redux";
 import "../global.css";
 
 export default function Index() {
+  // const isApiUp = useSelector(
+  //   (state: RootState) => state.healthCheckReducer.isApiUp,
+  // );
+  // const dispatch = useDispatch();
+
+  // useEffect(() => {
+  //   async function checkApiHealth() {
+  //     const isUp = await getApiHealth();
+  //     console.log("HEALTH IN INDEX: ", isUp);
+  //     dispatch(changeApiState(isUp));
+  //   }
+
+  //   checkApiHealth();
+  // }, []);
+
   return (
     <Provider store={store}>
       <SafeAreaView className="flex-1">

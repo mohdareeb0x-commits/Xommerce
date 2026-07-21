@@ -1,9 +1,11 @@
+import useHealth from "@/hooks/useHealth";
 import { getAllCategories } from "@/service/categroyApi";
 import { GetProducts } from "@/service/productApi";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import PaginationButton from "../buttons/PaginationButton";
 import ProductCard from "../cards/ProductCard";
+import LoadingSkeletonSection from "./LoadingSkeletonSection";
 
 interface image {
   url: string;
@@ -45,6 +47,7 @@ const GetData = async (
   page: number,
   limitReached: React.RefObject<boolean>,
 ) => {
+  // const timeout = setTimeout(async () => {
   try {
     // GetProducts({ page: page, limit: 6 }).then(setProducts);
     const [data, limit] = await GetProducts({ page: page, limit: 10 });
@@ -61,6 +64,8 @@ const GetData = async (
     //   setPage(page - 1);
     // }
   }
+  // }, 100);
+  // clearTimeout(timeout);
 };
 
 const GetCat = async (
@@ -77,62 +82,109 @@ const GetCat = async (
 };
 
 const BrowseProducts = () => {
+  // const isApiUp = useSelector(
+  //   (state: RootState) => state.healthCheckReducer.isApiUp,
+  // );
+
   const limitReached = useRef<boolean>(false);
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<product[]>([]);
   const [categories, setCategories] = useState<categories[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isReload, setIsReload] = useState(false);
+
+  const isApiUp = useHealth();
+  useEffect(() => {
+    async function getData() {
+      setIsLoading(true);
+
+      await GetCat(setCategories);
+      await GetData(setProducts, setPage, products, page, limitReached);
+      console.log("UP: ", isApiUp);
+      console.log("categories", categories);
+      console.log("limit in useeffect", limitReached.current);
+      setIsLoading(false);
+    }
+    getData();
+  }, [page]);
 
   const categoryMap = useMemo(() => {
-    return Object.fromEntries(
-      categories.map((category) => [category.id, category.name]),
-    );
+    if (isApiUp) {
+      return Object.fromEntries(
+        categories.map((category) => [category.id, category.name]),
+      );
+    }
+    return {};
   }, [categories]);
 
-  useEffect(() => {
-    GetData(setProducts, setPage, products, page, limitReached);
-    GetCat(setCategories);
-    console.log("categories", categoryMap);
-    console.log("limit in useeffect", limitReached.current);
-  }, [page]);
+  if (!isApiUp) {
+    return (
+      <View className="items-center gap-2 w-full h-96 justify-center">
+        <Text className="text-xl font-bold">OOPS!</Text>
+        <Text className="text-xl font-bold">
+          Looks like server is having a problem
+        </Text>
+        <Pressable
+          onPress={() => {
+            setIsReload(true);
+            setIsReload(false);
+            console.log(isReload);
+          }}
+          className="border border-blue-500 px-4 py-2 rounded-full"
+        >
+          <Text className="color-blue-500 font-medium">Reload</Text>
+        </Pressable>
+      </View>
+    );
+  }
+  if (isLoading) {
+    return (
+      <LoadingSkeletonSection />
+      // // <View className="items-center w-full h-96 justify-center">
+      //   {/* <ActivityIndicator color="black" size={40} /> */}
+      // // </View>
+    );
+  }
 
   return (
     <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
-      {products.map((item) =>
-        item.discount !== 0 ? (
-          <ProductCard
-            key={item.id}
-            productId={item.id}
-            isFauvorite={item.is_favourite}
-            image={
-              item.images.find((img) => img.isPrimary)?.url ??
-              item.images[0]?.url ??
-              ""
-            }
-            category={categoryMap[item.category] ?? item.category}
-            productName={item.name}
-            price={String(Math.floor(item.discountedPrice))}
-            discountedPrice={String(Math.floor(item.price))}
-            rating={item.rating}
-            badge={item.tag}
-          />
-        ) : (
-          <ProductCard
-            key={item.id}
-            productId={item.id}
-            image={
-              item.images.find((img) => img.isPrimary)?.url ??
-              item.images[0]?.url ??
-              ""
-            }
-            category={categoryMap[item.category] ?? item.category}
-            productName={item.name}
-            price={String(Math.floor(item.discountedPrice))}
-            isFauvorite={item.is_favourite}
-            rating={item.rating}
-            badge={item.tag}
-          />
-        ),
-      )}
+      {isApiUp &&
+        products.map((item) =>
+          item.discount !== 0 ? (
+            <ProductCard
+              key={item.id}
+              productId={item.id}
+              isFauvorite={item.is_favourite}
+              image={
+                item.images.find((img) => img.isPrimary)?.url ??
+                item.images[0]?.url ??
+                ""
+              }
+              category={categoryMap[item.category] ?? item.category}
+              productName={item.name}
+              price={String(Math.floor(item.discountedPrice))}
+              discountedPrice={String(Math.floor(item.price))}
+              rating={item.rating}
+              badge={item.tag}
+            />
+          ) : (
+            <ProductCard
+              key={item.id}
+              productId={item.id}
+              image={
+                item.images.find((img) => img.isPrimary)?.url ??
+                item.images[0]?.url ??
+                ""
+              }
+              category={categoryMap[item.category] ?? item.category}
+              productName={item.name}
+              price={String(Math.floor(item.discountedPrice))}
+              isFauvorite={item.is_favourite}
+              rating={item.rating}
+              badge={item.tag}
+            />
+          ),
+        )}
       {/* <ProductCard
         image="https://www.imagineonline.store/cdn/shop/files/MacBook_Pro_14_in_M3_Pro_Max_Space_Black_PDP_Image_Position-1__en-IN.jpg?v=1698726378&width=823"
         category="Apple"

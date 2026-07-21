@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
+import healthCheckReducer from "./apiHealthCheck/healthCheckSlice";
 import chipCattegoryReducer from "./chipCattegory/chipCattegorySlice";
 
 export const store = configureStore({
   reducer: {
     chipCattegory: chipCattegoryReducer,
+    healthCheckReducer: healthCheckReducer,
   },
 });
 
