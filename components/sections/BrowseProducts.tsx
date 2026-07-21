@@ -102,7 +102,9 @@ const BrowseProducts = () => {
   const isApiUp = useHealth();
 
   const handleReload = () => {
+    console.log("RELOAD HIT");
     dispatch(changeApiState(true));
+    console.log("RELOAD HIT api state:", isApiUp);
     setPage(1); // Reset to first page
     // setIsLoading(true); // Show loading
     limitReached.current = false; // Reset pagination limit
@@ -115,6 +117,7 @@ const BrowseProducts = () => {
     getData();
   }, [reloadCount, isApiUp]);
 
+  // if (isApiUp) {
   useEffect(() => {
     async function getData() {
       setIsLoading(true);
@@ -127,7 +130,8 @@ const BrowseProducts = () => {
       setIsLoading(false);
     }
     getData();
-  }, [page]);
+  }, [page, isApiUp]);
+  // }
 
   const categoryMap = useMemo(() => {
     if (isApiUp && !error) {
@@ -168,6 +172,41 @@ const BrowseProducts = () => {
             // console.log(isReload);
           }
           className="border bg-white border-blue-500 px-4 py-2 rounded-full"
+        >
+          <Text className="color-blue-500 font-medium">Reload</Text>
+        </Pressable>
+      </View>
+    );
+  }
+
+  if (products.length === 0) {
+    return (
+      <View className="items-center gap-2 w-full h-96 justify-center">
+        <Text className="text-xl font-bold">Unable to connect to server</Text>
+        <Pressable
+          onPress={
+            () => handleReload()
+            //   setPage(1);
+            //   setIsLoading(true);
+            //   async function getData() {
+            //     await GetCat(setCategories, setError);
+            //     await GetData(
+            //       setProducts,
+            //       setPage,
+            //       products,
+            //       page,
+            //       limitReached,
+            //       setError,
+            //     );
+            //   }
+            //   setIsLoading(false);
+            //   getData();
+            //   // setIsReload(true);
+            //   // setIsReload(false);
+            //   // console.log(isReload);
+            // }
+          }
+          className="border border-blue-500 px-4 py-2 rounded-full"
         >
           <Text className="color-blue-500 font-medium">Reload</Text>
         </Pressable>

@@ -17,6 +17,6 @@ export const getAllCategories = async () => {
     return result;
   } catch (err) {
     console.log("Category err", err);
-    return "Can't Fetch";
+    return [];
   }
 };
