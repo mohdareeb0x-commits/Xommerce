@@ -14,7 +14,7 @@ const PaginationButton = ({
 }: PaginationButtonProps) => {
   return (
     <Pressable
-      className="bg-white border-blue-500 border-2 active:bg-blue-300 disabled:bg-white disabled:border-gray-300 p-5 items-center justify-center rounded-full"
+      className="bg-white border-primary border-2 active:bg-tertiary disabled:bg-white disabled:border-borderGray p-5 items-center justify-center rounded-full"
       disabled={disabled}
       onPress={onPress}
     >
@@ -22,7 +22,7 @@ const PaginationButton = ({
         className="ml-1"
         name={left ? "arrow-back-ios" : "arrow-forward-ios"}
         size={18}
-        color={disabled ? "#d1d5db" : "#3b82f6"}
+        color={disabled ? "#e8e8e8" : "#2563eb"}
       />
     </Pressable>
   );

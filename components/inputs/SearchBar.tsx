@@ -9,15 +9,15 @@ interface SearchBarProps {
 
 const SearchBar = ({ placeHolder, onPress, onChangeText }: SearchBarProps) => {
   return (
-    <View className="flex-row items-center bg-gray-200 rounded-xl w-11/12 px-2">
-      <HeaderIcon name="search-outline" size={22} color="grey" />
+    <View className="flex-row items-center bg-inputGray border border-borderGray rounded-full py-1 w-11/12 px-3">
+      <HeaderIcon name="search" size={18} color="#888888" />
       <TextInput
         onPress={onPress}
         placeholder={placeHolder}
         value=""
         onChangeText={onChangeText}
-        placeholderTextColor="grey"
-        className="flex-1 ml-2 text-white font-jostSemiBold"
+        placeholderTextColor="#888888"
+        className="flex-1 ml-2 text-white font-gilroySemiBold"
       />
     </View>
   );

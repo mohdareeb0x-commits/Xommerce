@@ -1,5 +1,6 @@
 import useHealth from "@/hooks/useHealth";
 import { changeApiState } from "@/redux/apiHealthCheck/healthCheckSlice";
+import { setCategoryMap } from "@/redux/category/categorySlice";
 import { getAllCategories } from "@/service/categroyApi";
 import { GetProducts } from "@/service/productApi";
 import React, { useEffect, useMemo, useRef, useState } from "react";
@@ -15,7 +16,7 @@ interface image {
   isPrimary: boolean;
 }
 
-type categories = {
+export type categories = {
   id: string;
   name: string;
   slug: string;
@@ -140,6 +141,10 @@ const BrowseProducts = () => {
     }
     return {};
   }, [categories, error, isApiUp]);
+
+  useEffect(() => {
+    dispatch(setCategoryMap(categoryMap));
+  }, [categoryMap]);
 
   if (!isApiUp) {
     return (

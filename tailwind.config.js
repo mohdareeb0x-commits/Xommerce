@@ -10,8 +10,13 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        primary: "#030014",
-        secondary: "#151312",
+        primary: "#2563eb",
+        secondary: "#2563eb",
+        tertiary: "#dbeafe",
+        tertiary_dark: "#bed8fa",
+        borderGray: "#e8e8e8",
+        inputGray: "#f4f4f4",
+        mutedForeground: "#888888",
         light: {
           100: "#D6C7FF",
           200: "#A8B5DB",

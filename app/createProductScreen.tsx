@@ -9,7 +9,7 @@ import { CreateProduct } from "@/service/productApi";
 import Feather from "@expo/vector-icons/build/Feather";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
@@ -49,6 +49,12 @@ export type ProductForm = {
   specifications: Specification[];
   images: ProductImage[];
   isActive: boolean;
+};
+
+export type Category = {
+  id: string;
+  name: string;
+  slug: string;
 };
 
 const MAX_IMAGES = 5;
@@ -163,11 +169,6 @@ export default function CreateProductScreen() {
     } finally {
       setIsLoading(false);
     }
-  };
-  type Category = {
-    id: string;
-    name: string;
-    slug: string;
   };
 
   const [categories, setCategories] = useState<Category[]>([]);

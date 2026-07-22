@@ -13,28 +13,28 @@ const CategoryHeader = () => {
   const seeAll = useSelector((state: RootState) => state.chipCattegory.seeAll);
   const dispatch = useDispatch();
   return (
-    <View className="flex flex-row items-center absolute w-full justify-between p-5 bg-white shadow shadow-slate-500 z-50">
-      <View className="flex flex-row items-center ">
-        <Pressable
-          onPress={() => {
-            dispatch(toggleSeeAll(false));
-            router.back();
-          }}
-        >
-          <MaterialIcons
-            name="arrow-back-ios"
-            size={18}
-            color="black"
-            className="mr-5"
-          />
-        </Pressable>
-        <Text className="text-xl color-black font-jostSemiBold">
-          {seeAll ? chipCategory : "All"}
-        </Text>
-      </View>
-      <View className="flex flex-row items-center w-10 justify-between">
-        <HeaderIcon name="search-outline" size={22} color="#111827" />
-      </View>
+    <View className="flex flex-row items-center absolute w-full justify-between py-5 px-6 bg-white z-50">
+      {/* <View className="flex flex-row items-center "> */}
+      <Pressable
+        onPress={() => {
+          dispatch(toggleSeeAll(false));
+          router.back();
+        }}
+      >
+        <MaterialIcons
+          name="arrow-back-ios"
+          size={20}
+          color="black"
+          // className="mr-5"
+        />
+      </Pressable>
+      {/* </View> */}
+      <Text className="text-xl color-black font-jostSemiBold">
+        {seeAll ? chipCategory : "All"}
+      </Text>
+      {/* <View className="flex flex-row items-center justify-between"> */}
+      <HeaderIcon name="search-outline" size={22} color="#111827" />
+      {/* </View> */}
     </View>
   );
 };

@@ -21,7 +21,7 @@ const Header = () => {
         <Text className="font-gilroyBold text-xs">Good {greetings},</Text>
         <View className="flex flex-row items-center ">
           <Text className="text-3xl color-black font-bebas">X</Text>
-          <Text className="text-3xl color-blue-600 font-bebas">ommerce</Text>
+          <Text className="text-3xl color-primary font-bebas">ommerce</Text>
         </View>
       </View>
       <View className="flex flex-row items-center w-20 justify-between">

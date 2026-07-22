@@ -26,10 +26,10 @@ const ProductCard = ({
   badge,
 }: ProductCardProps) => {
   return (
-    <View className="w-44 min-h-72-96 bg-white rounded-xl">
+    <View className="w-44 min-h-72-96 bg-white rounded-3xl">
       <Image
         source={{ uri: image }}
-        className="w-full h-40 rounded-t-xl"
+        className="w-full h-40 rounded-t-3xl"
         resizeMode="cover"
       />
       {badge && (
