@@ -2,7 +2,7 @@ import { Pressable, Text, View } from "react-native";
 
 interface ButtonOutlineProps {
   label: string;
-  onPress?: () => {};
+  onPress?: () => void;
 }
 
 const ButtonOutline = ({ label, onPress }: ButtonOutlineProps) => {

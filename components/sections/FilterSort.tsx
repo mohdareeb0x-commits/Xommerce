@@ -16,10 +16,6 @@ import FilterButton from "../buttons/FilterButton";
 type ButtonActiveType = "filter" | "sort" | "both" | null;
 
 const FilterSort = () => {
-  const [buttonActive, setButtonActive] = useState<ButtonActiveType>("sort");
-  const [minValue, setMinValue] = useState("");
-  const [maxValue, setMaxValue] = useState("");
-  const [selected, setSelected] = useState("");
   const [catErr, setCatErr] = useState(false);
   const [isfilterActive, setFilterActive] = useState<boolean>(false);
 
