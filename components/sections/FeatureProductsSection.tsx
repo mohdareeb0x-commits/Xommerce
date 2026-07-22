@@ -9,7 +9,7 @@ const FeatureProductsSection = () => {
   return (
     <View>
       <View className="flex-row justify-between items-center w-11/12 mb-3">
-        <Text className="text-lg font-jostSemiBold text-slate-800 mb-3 font-gilroy">
+        <Text className="text-lg font-jostSemiBold text-slate-800 mb-3">
           Featured Products
         </Text>
         <Pressable
