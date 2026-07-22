@@ -1,5 +1,4 @@
 import { ProductForm } from "@/app/createProductScreen";
-import React from "react";
 import { Control, Controller } from "react-hook-form";
 import { TextInput } from "react-native";
 
@@ -25,7 +24,7 @@ export function FormInput({
       }}
       render={({ field: { value, onChange } }) => (
         <TextInput
-          className="border border-gray-300 rounded-xl px-5 py-3 text-lg"
+          className="border border-gray-300 rounded-xl px-5 py-3 text-lg font-jostMedium"
           value={String(value)}
           onChangeText={onChange}
           placeholder={placeholder}

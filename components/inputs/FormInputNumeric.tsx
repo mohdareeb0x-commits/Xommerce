@@ -17,7 +17,7 @@ export function FormInputNumeric<T extends FieldValues>({
       name={name}
       render={({ field: { value, onChange } }) => (
         <TextInput
-          className="border border-gray-300 rounded-xl px-5 py-3 text-lg"
+          className="border border-gray-300 rounded-xl px-5 py-3 text-lg font-jostMedium"
           {...props}
           keyboardType="numeric"
           value={value?.toString() ?? ""}

@@ -1,4 +1,3 @@
-import React from "react";
 import { Image, Pressable, Text, View } from "react-native";
 
 const HeroBanner = () => {
@@ -13,15 +12,17 @@ const HeroBanner = () => {
       />
       <View className="w-full h-full rounded-3xl absolute bg-blue-900 opacity-45 "></View>
       <View className="absolute w-60 h-full flex justify-around pl-5 py-3">
-        <Text className="text-white text-xs font-semibold">NEW ARRIVALS</Text>
-        <Text className="text-white text-3xl font-bold">
+        <Text className="text-white text-xs font-jostSemiBold">
+          NEW ARRIVALS
+        </Text>
+        <Text className="text-white text-3xl font-jostBold">
           Premium Tech Up to 40% Off
         </Text>
-        <Text className="text-slate-100 text-xs font-medium">
+        <Text className="text-slate-100 text-xs font-jostMedium">
           Headphones, laptops & more
         </Text>
         <Pressable className="bg-blue-500 w-28 flex items-center justify-center py-3 rounded-lg">
-          <Text className="text-white font-semibold">Shop Now</Text>
+          <Text className="text-white font-jostSemiBold">Shop Now</Text>
         </Pressable>
       </View>
     </View>

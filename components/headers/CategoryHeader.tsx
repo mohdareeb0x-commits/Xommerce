@@ -2,7 +2,6 @@ import { toggleSeeAll } from "@/redux/chipCattegory/chipCattegorySlice";
 import type { RootState } from "@/redux/store";
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import { router } from "expo-router";
-import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import HeaderIcon from "./HeaderIcon";
@@ -29,7 +28,7 @@ const CategoryHeader = () => {
             className="mr-5"
           />
         </Pressable>
-        <Text className="text-xl color-black font-semibold">
+        <Text className="text-xl color-black font-jostSemiBold">
           {seeAll ? chipCategory : "All"}
         </Text>
       </View>

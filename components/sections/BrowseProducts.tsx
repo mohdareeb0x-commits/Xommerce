@@ -49,26 +49,23 @@ const GetData = async (
 
   setError: React.Dispatch<React.SetStateAction<boolean | undefined>>,
 ) => {
-  // const timeout = setTimeout(async () => {
   try {
-    // GetProducts({ page: page, limit: 6 }).then(setProducts);
     const [data, limit] = await GetProducts({ page: page, limit: 10 });
-    // console.log("DATA IS", data);
+    if (!Array.isArray(data)) {
+      console.error("Invalid products data:", data);
+      setError(true);
+      setProducts([]);
+      return;
+    }
     if (limit) {
       limitReached.current = true;
-      // return;
     }
     setProducts(data);
-    // console.log("PRODUCTS ARE", products);
     console.log(page);
   } catch (error) {
-    // if (error == "Page limit exceeded") {
-    //   setPage(page - 1);
-    // }
     setError(true);
+    setProducts([]);
   }
-  // }, 100);
-  // clearTimeout(timeout);
 };
 
 const GetCat = async (
@@ -77,24 +74,26 @@ const GetCat = async (
 ) => {
   try {
     const data = await getAllCategories();
+    if (!Array.isArray(data)) {
+      console.error("Invalid categories data:", data);
+      setError(true);
+      setCategories([]);
+      return;
+    }
     setCategories(data);
   } catch (error) {
     setError(true);
+    setCategories([]);
   }
 };
 
 const BrowseProducts = () => {
-  // const isApiUp = useSelector(
-  //   (state: RootState) => state.healthCheckReducer.isApiUp,
-  // );
-
   const limitReached = useRef<boolean>(false);
   const [reloadCount, setReloadCount] = useState(0);
   const [page, setPage] = useState<number>(1);
   const [products, setProducts] = useState<product[]>([]);
   const [categories, setCategories] = useState<categories[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  // const [isReload, setIsReload] = useState(false);
   const [error, setError] = useState<boolean>();
 
   const dispatch = useDispatch();
@@ -102,12 +101,13 @@ const BrowseProducts = () => {
   const isApiUp = useHealth();
 
   const handleReload = () => {
+    setError(false);
     console.log("RELOAD HIT");
     dispatch(changeApiState(true));
     console.log("RELOAD HIT api state:", isApiUp);
-    setPage(1); // Reset to first page
-    // setIsLoading(true); // Show loading
-    limitReached.current = false; // Reset pagination limit
+    setPage(1);
+    setIsLoading(true);
+    limitReached.current = false;
   };
 
   useEffect(() => {
@@ -115,11 +115,11 @@ const BrowseProducts = () => {
       await GetCat(setCategories, setError);
     }
     getData();
-  }, [reloadCount, isApiUp]);
+  }, [reloadCount, isApiUp, error]);
 
-  // if (isApiUp) {
   useEffect(() => {
     async function getData() {
+      setError(false);
       setIsLoading(true);
 
       await GetData(setProducts, page, limitReached, setError);
@@ -131,7 +131,6 @@ const BrowseProducts = () => {
     }
     getData();
   }, [page, isApiUp]);
-  // }
 
   const categoryMap = useMemo(() => {
     if (isApiUp && !error) {
@@ -140,7 +139,7 @@ const BrowseProducts = () => {
       );
     }
     return {};
-  }, [categories]);
+  }, [categories, error, isApiUp]);
 
   if (!isApiUp) {
     return (
@@ -150,63 +149,8 @@ const BrowseProducts = () => {
           Looks like server is having a problem
         </Text>
         <Pressable
-          onPress={
-            () => handleReload()
-            // setPage(1);
-            // setIsLoading(true);
-            // async function getData() {
-            //   await GetCat(setCategories, setError);
-            //   await GetData(
-            //     setProducts,
-            //     setPage,
-            //     products,
-            //     page,
-            //     limitReached,
-            //     setError,
-            //   );
-            // }
-            // setIsLoading(false);
-            // getData();
-            // setIsReload(true);
-            // setIsReload(false);
-            // console.log(isReload);
-          }
+          onPress={() => handleReload()}
           className="border bg-white border-blue-500 px-4 py-2 rounded-full"
-        >
-          <Text className="color-blue-500 font-medium">Reload</Text>
-        </Pressable>
-      </View>
-    );
-  }
-
-  if (products.length === 0) {
-    return (
-      <View className="items-center gap-2 w-full h-96 justify-center">
-        <Text className="text-xl font-bold">Unable to connect to server</Text>
-        <Pressable
-          onPress={
-            () => handleReload()
-            //   setPage(1);
-            //   setIsLoading(true);
-            //   async function getData() {
-            //     await GetCat(setCategories, setError);
-            //     await GetData(
-            //       setProducts,
-            //       setPage,
-            //       products,
-            //       page,
-            //       limitReached,
-            //       setError,
-            //     );
-            //   }
-            //   setIsLoading(false);
-            //   getData();
-            //   // setIsReload(true);
-            //   // setIsReload(false);
-            //   // console.log(isReload);
-            // }
-          }
-          className="border border-blue-500 px-4 py-2 rounded-full"
         >
           <Text className="color-blue-500 font-medium">Reload</Text>
         </Pressable>
@@ -219,28 +163,7 @@ const BrowseProducts = () => {
       <View className="items-center gap-2 w-full h-96 justify-center">
         <Text className="text-xl font-bold">Unable to connect to server</Text>
         <Pressable
-          onPress={
-            () => handleReload()
-            //   setPage(1);
-            //   setIsLoading(true);
-            //   async function getData() {
-            //     await GetCat(setCategories, setError);
-            //     await GetData(
-            //       setProducts,
-            //       setPage,
-            //       products,
-            //       page,
-            //       limitReached,
-            //       setError,
-            //     );
-            //   }
-            //   setIsLoading(false);
-            //   getData();
-            //   // setIsReload(true);
-            //   // setIsReload(false);
-            //   // console.log(isReload);
-            // }
-          }
+          onPress={() => handleReload()}
           className="border border-blue-500 px-4 py-2 rounded-full"
         >
           <Text className="color-blue-500 font-medium">Reload</Text>
@@ -249,14 +172,22 @@ const BrowseProducts = () => {
     );
   }
   if (isLoading) {
-    return (
-      <LoadingSkeletonSection />
-      // // <View className="items-center w-full h-96 justify-center">
-      //   {/* <ActivityIndicator color="black" size={40} /> */}
-      // // </View>
-    );
+    return <LoadingSkeletonSection />;
   }
 
+  if (products.length === 0) {
+    return (
+      <View className="items-center gap-2 w-full h-96 justify-center">
+        <Text className="text-xl font-bold">Unable to connect to server</Text>
+        <Pressable
+          onPress={() => handleReload()}
+          className="border border-blue-500 px-4 py-2 rounded-full"
+        >
+          <Text className="color-blue-500 font-medium">Reload</Text>
+        </Pressable>
+      </View>
+    );
+  }
   return (
     <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
       {isApiUp &&
@@ -297,7 +228,9 @@ const BrowseProducts = () => {
             />
           ),
         )}
-      {/* <ProductCard
+      {
+        // Example Data: -->
+        /* <ProductCard
         image="https://www.imagineonline.store/cdn/shop/files/MacBook_Pro_14_in_M3_Pro_Max_Space_Black_PDP_Image_Position-1__en-IN.jpg?v=1698726378&width=823"
         category="Apple"
         productName="MacBook Pro 14 inch M3 Pro"
@@ -343,21 +276,8 @@ const BrowseProducts = () => {
         productName="Surface Laptop 5 13.5 inch"
         price="$999"
         rating={4.4}
-      /> */}
-      {/* <Pressable
-        className="bg-blue-500 active:bg-blue-400 disabled:bg-gray-400 p-5"
-        disabled={page === 1}
-        onPress={() => {
-          if (page === 1) {
-            return;
-          }
-          limitReached.current = false;
-          setPage(page - 1);
-          console.log(page, limitReached.current);
-        }}
-      >
-        <Text className="color-white">1</Text>
-      </Pressable> */}
+      /> */
+      }
       <View className="w-full">
         <View className="flex-row gap-5 self-center">
           <PaginationButton
@@ -385,25 +305,6 @@ const BrowseProducts = () => {
           />
         </View>
       </View>
-      {/* <Pressable
-        className="bg-blue-500 active:bg-blue-400 disabled:bg-gray-500 p-5"
-        disabled={limitReached.current}
-        onPress={() => {
-          if (limitReached.current) {
-            console.log("ONPRESS", limitReached.current);
-            return;
-          }
-          if (!limitReached.current) {
-            console.log("LIIIIMIIIT", limitReached.current);
-            setPage(page + 1);
-          }
-          console.log("LIIIIMIIIT22222", limitReached.current);
-
-          console.log(page);
-        }}
-      >
-        <Text>2</Text>
-      </Pressable> */}
     </View>
   );
 };

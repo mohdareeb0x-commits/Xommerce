@@ -8,12 +8,6 @@ interface FavouriteButtonProps {
   isWishlist: boolean;
 }
 
-interface OnPressProps {
-  productId: string;
-  isFavourite: boolean;
-  setIsFavourite: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
 const handleOnpress = async (
   setIsFavourite: React.Dispatch<React.SetStateAction<boolean>>,
   isFavourite: boolean,

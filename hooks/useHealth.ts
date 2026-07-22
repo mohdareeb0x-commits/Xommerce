@@ -18,7 +18,7 @@ const useHealth = () => {
     }
 
     checkApiHealth();
-  }, []);
+  }, [dispatch]);
   return isApiUp;
 };
 

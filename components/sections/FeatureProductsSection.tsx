@@ -1,6 +1,5 @@
 import { toggleSeeAll } from "@/redux/chipCattegory/chipCattegorySlice";
 import { router } from "expo-router";
-import React from "react";
 import { Pressable, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
 import ProductCard from "../cards/ProductCard";
@@ -10,7 +9,7 @@ const FeatureProductsSection = () => {
   return (
     <View>
       <View className="flex-row justify-between items-center w-11/12 mb-3">
-        <Text className="text-lg font-semibold text-slate-800 mb-3">
+        <Text className="text-lg font-jostSemiBold text-slate-800 mb-3 font-gilroy">
           Featured Products
         </Text>
         <Pressable
@@ -19,7 +18,7 @@ const FeatureProductsSection = () => {
             router.push("/(tabs)/browse");
           }}
         >
-          <Text className="text-sm font-semibold text-blue-600 mb-3">
+          <Text className="text-sm font-jostSemiBold text-blue-600 mb-3">
             See All
           </Text>
         </Pressable>
@@ -31,8 +30,8 @@ const FeatureProductsSection = () => {
           productId="6a5941ced91e53d096133923"
           isFauvorite={false}
           productName="Sony WH-1000XM5 Wireless Headphones"
-          price="279"
-          discountedPrice="349"
+          discountedPrice="279"
+          price="349"
           rating={4.8}
           badge="-20%"
         />
@@ -42,7 +41,7 @@ const FeatureProductsSection = () => {
           isFauvorite={false}
           category="Laptops"
           productName="MacBook Pro 14 inch M3 Pro"
-          price="1,999"
+          discountedPrice="1,999"
           rating={4.9}
         />
         <ProductCard
@@ -51,7 +50,7 @@ const FeatureProductsSection = () => {
           isFauvorite={false}
           category="Phones"
           productName="iPhone 15 Pro 256GB"
-          price="999"
+          discountedPrice="999"
           rating={4.7}
           badge="New"
         />
@@ -61,7 +60,7 @@ const FeatureProductsSection = () => {
           isFauvorite={false}
           category="Wearables"
           productName="Apple Watch Ultra 2"
-          price="799"
+          discountedPrice="799"
           rating={4.6}
         />
       </View>

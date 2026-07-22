@@ -1,4 +1,3 @@
-import React from "react";
 import { TextInput, View } from "react-native";
 import HeaderIcon from "../headers/HeaderIcon";
 
@@ -18,7 +17,7 @@ const SearchBar = ({ placeHolder, onPress, onChangeText }: SearchBarProps) => {
         value=""
         onChangeText={onChangeText}
         placeholderTextColor="grey"
-        className="flex-1 ml-2 text-white"
+        className="flex-1 ml-2 text-white font-jostSemiBold"
       />
     </View>
   );

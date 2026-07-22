@@ -1,6 +1,5 @@
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
 import { router } from "expo-router";
-import React from "react";
 import { Pressable, Text, View } from "react-native";
 
 const DefaultHeader = ({ headerLabel }: { headerLabel: string }) => {
@@ -19,7 +18,9 @@ const DefaultHeader = ({ headerLabel }: { headerLabel: string }) => {
             className="mr-5"
           />
         </Pressable>
-        <Text className="text-xl color-black font-semibold">{headerLabel}</Text>
+        <Text className="text-xl color-black font-jostSemiBold">
+          {headerLabel}
+        </Text>
       </View>
     </View>
   );

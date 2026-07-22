@@ -27,26 +27,29 @@ export default function TabLayout() {
             const iconName = focused ? icons.active : icons.inactive;
             return <Ionicons name={iconName} size={size ?? 24} color={color} />;
           },
+          tabBarLabelStyle: {
+            fontFamily: "Jost_600SemiBold",
+          },
           headerShown: false,
         })}
       >
         <Tabs.Screen
           name="index"
           options={{
-            title: "Home",
+            title: "HOME",
           }}
         />
         <Tabs.Screen
           name="browse"
-          options={{ title: "Browse" }}
+          options={{ title: "BROWSE" }}
           listeners={{
             tabPress: (e) => {
               dispatch(toggleSeeAll(false));
             },
           }}
         />
-        <Tabs.Screen name="cart" options={{ title: "Cart" }} />
-        <Tabs.Screen name="profile" options={{ title: "Profile" }} />
+        <Tabs.Screen name="cart" options={{ title: "CART" }} />
+        <Tabs.Screen name="profile" options={{ title: "PROFILE" }} />
       </Tabs>
     </Provider>
   );

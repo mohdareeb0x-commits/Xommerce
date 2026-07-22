@@ -1,5 +1,4 @@
 import MaterialIcons from "@expo/vector-icons/build/MaterialIcons";
-import React from "react";
 import { Pressable } from "react-native";
 
 interface PaginationButtonProps {
@@ -19,7 +18,6 @@ const PaginationButton = ({
       disabled={disabled}
       onPress={onPress}
     >
-      {/* <Text className="color-white"> */}
       <MaterialIcons
         className="ml-1"
         name={left ? "arrow-back-ios" : "arrow-forward-ios"}

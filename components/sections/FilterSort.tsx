@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Text, View } from "react-native";
 import FilterButton from "../buttons/FilterButton";
 
@@ -12,7 +12,7 @@ const FilterSort = () => {
         <FilterButton name="Filter" icon="filter-outline" />
         <FilterButton name="Sort" icon="sort" />
       </View>
-      <Text className="font-semibold text-sm color-gray-400">24 items</Text>
+      <Text className="font-jostSemiBold text-sm color-gray-400">24 items</Text>
     </View>
   );
 };

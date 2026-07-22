@@ -1,5 +1,5 @@
 import MaterialCommunityIcons from "@expo/vector-icons/build/MaterialCommunityIcons";
-import React, { useState } from "react";
+import { useState } from "react";
 import { Pressable, Text, View } from "react-native";
 
 interface FilterButtonProps {
@@ -26,8 +26,8 @@ const FilterButton = ({ icon, name }: FilterButtonProps) => {
         <Text
           className={
             isActive
-              ? "color-blue-500 font-semibold"
-              : "color-black font-semibold"
+              ? "color-blue-500 font-jostSemiBold"
+              : "color-black font-jostSemiBold"
           }
         >
           {name}

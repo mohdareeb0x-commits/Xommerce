@@ -1,5 +1,4 @@
 import Ionicons from "@expo/vector-icons/build/Ionicons";
-import React from "react";
 import { Pressable, Text } from "react-native";
 
 interface CategoryChipProps {
@@ -22,7 +21,7 @@ const CattegoryChip = ({
         className="bg-black border-black border rounded-full px-4 py-2 mr-2 w-auto flex-row items-center justify-around"
       >
         <Ionicons name={icon} size={20} color="white" />
-        <Text className="color-white ml-1">{label}</Text>
+        <Text className="color-white ml-1 font-jostMedium">{label}</Text>
       </Pressable>
     );
   }
@@ -32,7 +31,7 @@ const CattegoryChip = ({
       className="bg-white border-gray-200 border rounded-full px-4 py-2 mr-2 w-auto flex-row items-center justify-around"
     >
       <Ionicons name={icon} size={20} color="#6B7280" />
-      <Text className="color-gray-500 ml-1">{label}</Text>
+      <Text className="color-gray-500 ml-1 font-jostMedium">{label}</Text>
     </Pressable>
   );
 };

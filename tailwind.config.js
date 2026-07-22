@@ -1,25 +1,40 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   // NOTE: Update this to include the paths to all files that contain Nativewind classes.
-  content: ["./App.tsx", "./components/**/*.{js,jsx,ts,tsx}", "./app/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./App.tsx",
+    "./components/**/*.{js,jsx,ts,tsx}",
+    "./app/**/*.{js,jsx,ts,tsx}",
+  ],
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: {
-        primary: '#030014',
-        secondary: '#151312',
+        primary: "#030014",
+        secondary: "#151312",
         light: {
-          100: '#D6C7FF',
-          200: '#A8B5DB',
-          300: '#9CA4AB'
+          100: "#D6C7FF",
+          200: "#A8B5DB",
+          300: "#9CA4AB",
         },
         dark: {
-          100: '#221f3d',
-          200: '#0f0d23',
+          100: "#221f3d",
+          200: "#0f0d23",
         },
-        accent: 'AB8BFF',
-      }
+        accent: "AB8BFF",
+      },
+      fontFamily: {
+        jost: ["Jost_400Regular"],
+        jostMedium: ["Jost_500Medium"],
+        jostBold: ["Jost_700Bold"],
+        jostSemiBold: ["Jost_600SemiBold"],
+        bebas: ["BebasNeue_400Regular"],
+        gilroy: ["Gilroy_Regular"],
+        gilroyMedium: ["Gilroy_Medium"],
+        gilroySemiBold: ["Gilroy_SemiBold"],
+        gilroyBold: ["Gilroy_Bold"],
+      },
     },
   },
   plugins: [],
-}
+};
