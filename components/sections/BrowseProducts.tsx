@@ -231,7 +231,7 @@ const BrowseProducts = () => {
               price={String(Math.floor(item.price))}
               discountedPrice={String(Math.floor(item.discountedPrice))}
               rating={item.rating}
-              badge={item.tag}
+              badge={String(item.discount)}
             />
           ) : (
             <ProductCard
@@ -247,7 +247,6 @@ const BrowseProducts = () => {
               discountedPrice={String(Math.floor(item.discountedPrice))}
               isFauvorite={item.is_favourite}
               rating={item.rating}
-              badge={item.tag}
             />
           ),
         )}

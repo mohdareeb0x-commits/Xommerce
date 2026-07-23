@@ -43,7 +43,7 @@ const FilterButton = ({ icon, name, setValue, value }: FilterButtonProps) => {
         <MaterialCommunityIcons
           name={icon}
           size={18}
-          color={isActive ? "#3b82f6" : "black"}
+          color={isActive ? "#2563eb" : "black"}
         />
         <Text
           className={

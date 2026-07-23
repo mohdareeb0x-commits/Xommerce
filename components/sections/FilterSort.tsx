@@ -132,6 +132,7 @@ const FilterSort = () => {
           </Pressable>
           <Pressable
             onPress={() => {
+              dispatch(setApply(false));
               if (Number(maxPrice) < Number(minPrice) && maxPrice !== "") {
                 Alert.alert("Max price can't be less than Min price or zero");
                 dispatch(setApply(false));

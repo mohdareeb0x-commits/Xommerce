@@ -34,7 +34,9 @@ const ProductCard = ({
       />
       {badge && (
         <View className="absolute z-10 py-1 px-2 rounded-lg top-2 left-2 bg-blue-500">
-          <Text className="text-xs font-gilroyMedium color-white">{badge}</Text>
+          <Text className="text-xs font-gilroyMedium color-white">
+            -{badge}%
+          </Text>
         </View>
       )}
       <FavouriteButton productId={productId} isWishlist={isFauvorite} />
@@ -69,5 +71,4 @@ const ProductCard = ({
     </View>
   );
 };
-
 export default ProductCard;
