@@ -1,5 +1,6 @@
 import { Category } from "@/app/createProductScreen";
 import {
+  setApply,
   setCategory,
   setMaxPrice,
   setMinPrice,
@@ -9,7 +10,7 @@ import { getAllCategories } from "@/service/categroyApi";
 import { Entypo } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useEffect, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import FilterButton from "../buttons/FilterButton";
 
@@ -37,9 +38,7 @@ const FilterSort = () => {
           throw new Error("Unable to fetch cat");
         }
         setCategories(result);
-        console.log("CATEGORIES", categories);
       } catch (err) {
-        console.log("GET ALL CaT ERR", err);
         setCategories([]);
         setCatErr(true);
       }
@@ -57,7 +56,6 @@ const FilterSort = () => {
           value={isfilterActive}
           setValue={setFilterActive}
         />
-        {/* <FilterButton name="Sort" icon="sort" /> */}
       </View>
       <Text className="font-jostSemiBold text-sm color-gray-400">24 items</Text>
 
@@ -77,10 +75,10 @@ const FilterSort = () => {
         <View className="w-full h-[1px] bg-borderGray"></View>
         <View className="flex-row w-full items-center justify-between">
           <Text className="font-jostMedium">Price</Text>
-          <View className="flex-row gap-5 items-center">
+          <View className="flex-row gap-6 items-center">
             <TextInput
               keyboardType="numeric"
-              className="border min-w-18 border-borderGray rounded-xl px-5 py-1 text-lg font-jostMedium"
+              className="border min-w-16 max-w-28 border-borderGray rounded-xl px-5 py-1 text-lg font-jostMedium"
               value={String(minPrice)}
               onChangeText={(price) => dispatch(setMinPrice(price))}
               placeholder="Min"
@@ -88,7 +86,7 @@ const FilterSort = () => {
             <Text className="font-jostMedium">to</Text>
             <TextInput
               keyboardType="numeric"
-              className="border min-w-20 items-center border-borderGray rounded-xl px-5 py-1 text-lg font-jostMedium"
+              className="border min-w-16 max-w-28 items-center border-borderGray rounded-xl px-5 py-1 text-lg font-jostMedium"
               value={String(maxPrice)}
               onChangeText={(price) => dispatch(setMaxPrice(price))}
               placeholder="Max"
@@ -119,8 +117,35 @@ const FilterSort = () => {
             </Picker>
           </View>
         </View>
+        <View className="flex-row w-full gap-2 items-center justify-around">
+          <Pressable
+            onPress={() => {
+              dispatch(setMaxPrice(""));
+              dispatch(setMinPrice(""));
+              dispatch(setCategory(""));
+              dispatch(setApply(false));
+              setFilterActive(false);
+            }}
+            className="border border-primary w-1/2 items-center px-5 py-3 rounded-full"
+          >
+            <Text className="text-primary font-gilroySemiBold">Cancel</Text>
+          </Pressable>
+          <Pressable
+            onPress={() => {
+              if (Number(maxPrice) < Number(minPrice) && maxPrice !== "") {
+                Alert.alert("Max price can't be less than Min price or zero");
+                dispatch(setApply(false));
+                return;
+              }
+              dispatch(setApply(true));
+              setFilterActive(false);
+            }}
+            className="border border-primary w-1/2 items-center bg-primary px-5 py-3 rounded-full"
+          >
+            <Text className="text-white font-gilroySemiBold">Apply</Text>
+          </Pressable>
+        </View>
       </View>
-      {/* )} */}
     </View>
   );
 };

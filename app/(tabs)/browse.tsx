@@ -23,12 +23,12 @@ const Browse = () => {
   const [categories, setCategories] = useState<categories[]>([]);
   return (
     <SafeAreaView className="flex-1">
+      <CategoryHeader />
       <ScrollView
         className="flex-1 mb-5"
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
-        <CategoryHeader />
         <View className="top-16 pt-4 gap-4 bg-white">
           <FilterSort />
           <FilterChipSection />

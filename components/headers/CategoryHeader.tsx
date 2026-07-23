@@ -13,28 +13,19 @@ const CategoryHeader = () => {
   const seeAll = useSelector((state: RootState) => state.chipCattegory.seeAll);
   const dispatch = useDispatch();
   return (
-    <View className="flex flex-row items-center absolute w-full justify-between py-5 px-6 bg-white z-50">
-      {/* <View className="flex flex-row items-center "> */}
+    <View className="flex flex-row items-center absolute w-full top-10 justify-between py-5 px-6 bg-white z-50">
       <Pressable
         onPress={() => {
           dispatch(toggleSeeAll(false));
           router.back();
         }}
       >
-        <MaterialIcons
-          name="arrow-back-ios"
-          size={20}
-          color="black"
-          // className="mr-5"
-        />
+        <MaterialIcons name="arrow-back-ios" size={20} color="black" />
       </Pressable>
-      {/* </View> */}
       <Text className="text-xl color-black font-jostSemiBold">
         {seeAll ? chipCategory : "All"}
       </Text>
-      {/* <View className="flex flex-row items-center justify-between"> */}
       <HeaderIcon name="search-outline" size={22} color="#111827" />
-      {/* </View> */}
     </View>
   );
 };

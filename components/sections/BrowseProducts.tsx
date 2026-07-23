@@ -1,11 +1,12 @@
 import useHealth from "@/hooks/useHealth";
 import { changeApiState } from "@/redux/apiHealthCheck/healthCheckSlice";
 import { setCategoryMap } from "@/redux/category/categorySlice";
+import { RootState } from "@/redux/store";
 import { getAllCategories } from "@/service/categroyApi";
 import { GetProducts } from "@/service/productApi";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import PaginationButton from "../buttons/PaginationButton";
 import ProductCard from "../cards/ProductCard";
 import LoadingSkeletonSection from "./LoadingSkeletonSection";
@@ -47,14 +48,20 @@ const GetData = async (
   setProducts: React.Dispatch<React.SetStateAction<product[]>>,
   page: number,
   limitReached: React.RefObject<boolean>,
-
+  category: string,
+  minPrice: string,
+  maxPrice: string,
   setError: React.Dispatch<React.SetStateAction<boolean | undefined>>,
 ) => {
   try {
-    const [data, limit] = await GetProducts({ page: page, limit: 10 });
+    const [data, limit] = await GetProducts({
+      page: page,
+      limit: 10,
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      category: category,
+    });
     if (!Array.isArray(data)) {
-      console.error("Invalid products data:", data);
-      setError(true);
       setProducts([]);
       return;
     }
@@ -62,7 +69,6 @@ const GetData = async (
       limitReached.current = true;
     }
     setProducts(data);
-    console.log(page);
   } catch (error) {
     setError(true);
     setProducts([]);
@@ -97,15 +103,15 @@ const BrowseProducts = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<boolean>();
 
+  const filter = useSelector((state: RootState) => state.filter);
+
   const dispatch = useDispatch();
 
   const isApiUp = useHealth();
 
   const handleReload = () => {
     setError(false);
-    console.log("RELOAD HIT");
     dispatch(changeApiState(true));
-    console.log("RELOAD HIT api state:", isApiUp);
     setPage(1);
     setIsLoading(true);
     limitReached.current = false;
@@ -119,19 +125,29 @@ const BrowseProducts = () => {
   }, [reloadCount, isApiUp, error]);
 
   useEffect(() => {
+    if (filter.applied === false) {
+      limitReached.current = false;
+    }
+  }, [filter.applied]);
+
+  useEffect(() => {
     async function getData() {
       setError(false);
       setIsLoading(true);
 
-      await GetData(setProducts, page, limitReached, setError);
-      console.log("UP: ", isApiUp);
-      console.log("categories", categories);
-      console.log("data", products);
-      console.log("limit in useeffect", limitReached.current);
+      await GetData(
+        setProducts,
+        page,
+        limitReached,
+        filter.category,
+        filter.minPrice,
+        filter.maxPrice,
+        setError,
+      );
       setIsLoading(false);
     }
     getData();
-  }, [page, isApiUp]);
+  }, [page, isApiUp, filter.applied]);
 
   const categoryMap = useMemo(() => {
     if (isApiUp && !error) {
@@ -183,7 +199,9 @@ const BrowseProducts = () => {
   if (products.length === 0) {
     return (
       <View className="items-center gap-2 w-full h-96 justify-center">
-        <Text className="text-xl font-bold">Unable to connect to server</Text>
+        <Text className="text-xl font-bold">
+          No products matched the search
+        </Text>
         <Pressable
           onPress={() => handleReload()}
           className="border border-blue-500 px-4 py-2 rounded-full"

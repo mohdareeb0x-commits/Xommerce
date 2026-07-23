@@ -3,6 +3,9 @@ import { ProductForm } from "@/app/createProductScreen";
 interface PostQueryParams {
   page: number;
   limit: number;
+  category?: string;
+  maxPrice?: string;
+  minPrice?: string;
 }
 
 const baseUrl = "http://10.185.89.79:8080/api/v1/product";
@@ -32,7 +35,6 @@ export const GetProducts = async (
     const limitExceeded = params.page >= totalData.total_pages;
     return [prodData, limitExceeded];
   } catch (error) {
-    console.log("Error in api", error);
     return [[], null];
   }
 };
@@ -48,7 +50,6 @@ export const UpdateProductWishList = async (data: WishlistPostData) => {
   formData.append("id", data.id);
   formData.append("isFav", String(data.isFav));
 
-  console.log(formData);
   try {
     const response = await fetch(productUrl, {
       method: "POST",
@@ -61,10 +62,8 @@ export const UpdateProductWishList = async (data: WishlistPostData) => {
     if (result === null) {
       throw new Error("Data is null");
     }
-    console.log("ID:", data.id);
     return result;
   } catch (error) {
-    console.log("Error in api", error);
     return ["Error fetching products", null];
   }
 };

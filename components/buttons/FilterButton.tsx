@@ -22,10 +22,8 @@ const FilterButton = ({ icon, name, setValue, value }: FilterButtonProps) => {
       filter.minPrice === ""
     ) {
       setIsActive(false);
-      console.log(filter.category);
     } else {
       setIsActive(true);
-      console.log(filter.category);
     }
   }, [filter]);
 

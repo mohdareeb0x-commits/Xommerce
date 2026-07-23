@@ -1,18 +1,22 @@
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { createSlice } from "@reduxjs/toolkit";
 
-// export type ChipCategoryType =
+export type FilterErrorType = "max ls min" | "max 0" | null;
 
 export interface FilterState {
   minPrice: string;
   maxPrice: string;
   category: string;
+  applied: boolean;
+  error: boolean;
 }
 
 const initialState: FilterState = {
   minPrice: "",
   maxPrice: "",
   category: "",
+  applied: false,
+  error: false,
 };
 
 export const chipCattegorySlice = createSlice({
@@ -32,11 +36,17 @@ export const chipCattegorySlice = createSlice({
     setCategory: (state, category: PayloadAction<string>) => {
       state.category = category.payload;
     },
+    setApply: (state, isApplied: PayloadAction<boolean>) => {
+      state.applied = isApplied.payload;
+    },
+    setError: (state, err: PayloadAction<boolean>) => {
+      state.error = err.payload;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setMinPrice, setMaxPrice, setCategory } =
+export const { setMinPrice, setMaxPrice, setCategory, setApply, setError } =
   chipCattegorySlice.actions;
 
 export default chipCattegorySlice.reducer;

@@ -1,4 +1,5 @@
 import {
+  setApply,
   setCategory,
   setMaxPrice,
   setMinPrice,
@@ -22,17 +23,18 @@ const FilterChipSection = () => {
   useEffect(() => {
     if (filter.minPrice !== "" && filter.maxPrice !== "") {
       setnumValue(`$${filter.minPrice} - $${filter.maxPrice}`);
+    } else if (filter.minPrice !== "" && filter.maxPrice === "") {
+      setnumValue(`$${filter.minPrice} - Any`);
     } else if (filter.maxPrice === "" && filter.minPrice === "") {
       setnumValue("");
     } else if (filter.maxPrice !== "" && filter.minPrice === "") {
       setnumValue(`$0 - $${filter.maxPrice}`);
     }
-  });
+  }, [filter]);
 
   if (
-    filter.category === "" &&
-    filter.minPrice === "" &&
-    filter.maxPrice === ""
+    !filter.applied ||
+    (filter.category === "" && filter.minPrice === "" && filter.maxPrice === "")
   ) {
     return (
       <ScrollView className="w-auto border-y border-borderGray" horizontal>
@@ -48,7 +50,7 @@ const FilterChipSection = () => {
   return (
     <ScrollView className="w-auto border-y border-borderGray" horizontal>
       <View className="w-11/12 gap-2 flex-row ml-5 mr-5 py-2">
-        {filter.category !== "" ? (
+        {filter.applied && filter.category !== "" ? (
           <FilterChip
             label={categoryMap[filter.category]}
             onPress={() => {
@@ -58,7 +60,7 @@ const FilterChipSection = () => {
         ) : (
           <></>
         )}
-        {numValue !== "" ? (
+        {filter.applied && numValue !== "" ? (
           <FilterChip
             label={numValue}
             onPress={() => {
@@ -72,6 +74,7 @@ const FilterChipSection = () => {
         <ButtonOutline
           label="Clear All"
           onPress={() => {
+            dispatch(setApply(false));
             dispatch(setCategory(""));
             dispatch(setMaxPrice(""));
             dispatch(setMinPrice(""));
