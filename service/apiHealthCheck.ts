@@ -1,6 +1,10 @@
-const baseUrl = "http://10.185.89.79:8080/api/v1/health";
+const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"] + "/health";
 
 export const getApiHealth = async () => {
+  if (!baseUrl) {
+    console.warn("EXPO_PUBLIC_BASE_URL is not set");
+    return;
+  }
   try {
     const response = await fetch(baseUrl, {
       method: "GET",

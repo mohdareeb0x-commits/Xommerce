@@ -1,20 +1,19 @@
-import { Category } from "@/app/createProductScreen";
 import {
   setApply,
   setCategory,
   setMaxPrice,
   setMinPrice,
+  toggleApply,
 } from "@/redux/filter/filterSlice";
 import { RootState } from "@/redux/store";
 import { getAllCategories } from "@/service/categroyApi";
+import { Category } from "@/types/categoryType";
 import { Entypo } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { useEffect, useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import FilterButton from "../buttons/FilterButton";
-
-type ButtonActiveType = "filter" | "sort" | "both" | null;
 
 const FilterSort = () => {
   const [catErr, setCatErr] = useState(false);
@@ -138,6 +137,7 @@ const FilterSort = () => {
                 dispatch(setApply(false));
                 return;
               }
+              dispatch(toggleApply());
               dispatch(setApply(true));
               setFilterActive(false);
             }}

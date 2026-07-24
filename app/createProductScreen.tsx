@@ -6,6 +6,8 @@ import { getAllCategories } from "@/service/categroyApi";
 import { checkInternet } from "@/service/checkInternet";
 import { uploadImage } from "@/service/imageUploadApi";
 import { CreateProduct } from "@/service/productApi";
+import { Category } from "@/types/categoryType";
+import { ProductForm } from "@/types/productFormType";
 import Feather from "@expo/vector-icons/build/Feather";
 import { Picker } from "@react-native-picker/picker";
 import * as ImagePicker from "expo-image-picker";
@@ -23,39 +25,6 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-type ProductImage = {
-  url: string;
-  alt: string;
-  isPrimary: boolean;
-};
-
-type Specification = {
-  key: string;
-  value: string;
-};
-
-export type ProductForm = {
-  sku: string;
-  name: string;
-  description: string;
-  category: string;
-  price: number;
-  discount: number;
-  discountedPrice: number;
-  stock: number;
-  seller: string;
-  tags: string;
-  specifications: Specification[];
-  images: ProductImage[];
-  isActive: boolean;
-};
-
-export type Category = {
-  id: string;
-  name: string;
-  slug: string;
-};
 
 const MAX_IMAGES = 5;
 

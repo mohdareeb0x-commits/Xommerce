@@ -1,4 +1,4 @@
-import { ProductForm } from "@/app/createProductScreen";
+import { ProductForm } from "@/types/productFormType";
 
 interface PostQueryParams {
   page: number;
@@ -8,7 +8,7 @@ interface PostQueryParams {
   minPrice?: string;
 }
 
-const baseUrl = "http://10.185.89.79:8080/api/v1/product";
+const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"] + "/product";
 
 export const GetProducts = async (
   params: PostQueryParams,

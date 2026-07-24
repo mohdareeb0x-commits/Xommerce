@@ -1,4 +1,4 @@
-const baseUrl = "http://10.185.89.79:8080/api/v1/category";
+const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"] + "/category";
 
 export const getAllCategories = async () => {
   try {

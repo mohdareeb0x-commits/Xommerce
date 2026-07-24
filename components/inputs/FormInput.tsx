@@ -1,4 +1,4 @@
-import { ProductForm } from "@/app/createProductScreen";
+import { ProductForm } from "@/types/productFormType";
 import { Control, Controller } from "react-hook-form";
 import { TextInput } from "react-native";
 

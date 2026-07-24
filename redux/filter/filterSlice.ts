@@ -8,6 +8,7 @@ export interface FilterState {
   maxPrice: string;
   category: string;
   applied: boolean;
+  appliedVersion: number;
   error: boolean;
 }
 
@@ -16,6 +17,7 @@ const initialState: FilterState = {
   maxPrice: "",
   category: "",
   applied: false,
+  appliedVersion: 0,
   error: false,
 };
 
@@ -42,11 +44,20 @@ export const chipCattegorySlice = createSlice({
     setError: (state, err: PayloadAction<boolean>) => {
       state.error = err.payload;
     },
+    toggleApply: (state) => {
+      state.appliedVersion = state.appliedVersion + 1;
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setMinPrice, setMaxPrice, setCategory, setApply, setError } =
-  chipCattegorySlice.actions;
+export const {
+  setMinPrice,
+  setMaxPrice,
+  setCategory,
+  setApply,
+  setError,
+  toggleApply,
+} = chipCattegorySlice.actions;
 
 export default chipCattegorySlice.reducer;

@@ -1,5 +1,6 @@
 import Ionicons from "@expo/vector-icons/build/Ionicons";
-import { Image, Text, View } from "react-native";
+import { Image } from "expo-image";
+import { Text, View } from "react-native";
 import FavouriteButton from "../buttons/FavouriteButton";
 
 interface ProductCardProps {
@@ -30,7 +31,9 @@ const ProductCard = ({
       <Image
         source={{ uri: image }}
         className="w-full h-40 rounded-t-3xl"
-        resizeMode="cover"
+        contentFit="cover"
+        cachePolicy="memory-disk"
+        transition={200}
       />
       {badge && (
         <View className="absolute z-10 py-1 px-2 rounded-lg top-2 left-2 bg-blue-500">

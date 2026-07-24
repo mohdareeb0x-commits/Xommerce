@@ -2,7 +2,7 @@ import { toggleSeeAll } from "@/redux/chipCattegory/chipCattegorySlice";
 import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
-import ProductCard from "../cards/ProductCard";
+import BrowseProducts from "./BrowseProducts";
 
 const FeatureProductsSection = () => {
   const dispatch = useDispatch();
@@ -23,7 +23,8 @@ const FeatureProductsSection = () => {
           </Text>
         </Pressable>
       </View>
-      <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
+      <BrowseProducts limit={8} screen="home" />
+      {/* <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
         <ProductCard
           image="https://shopatsc.com/cdn/shop/products/2500x2500_Silver_1.jpg?v=1694415813"
           category="Audio"
@@ -63,7 +64,7 @@ const FeatureProductsSection = () => {
           discountedPrice="799"
           rating={4.6}
         />
-      </View>
+      </View> */}
     </View>
   );
 };

@@ -1,4 +1,5 @@
 import { toggleSeeAll } from "@/redux/chipCattegory/chipCattegorySlice";
+import { toggleApply } from "@/redux/filter/filterSlice";
 import { store } from "@/redux/store";
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
@@ -37,6 +38,11 @@ export default function TabLayout() {
           name="index"
           options={{
             title: "HOME",
+          }}
+          listeners={{
+            tabPress: (e) => {
+              dispatch(toggleApply());
+            },
           }}
         />
         <Tabs.Screen

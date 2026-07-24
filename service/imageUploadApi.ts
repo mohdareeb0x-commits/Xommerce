@@ -1,5 +1,12 @@
+const baseUrl = process.env["EXPO_PUBLIC_CLOUDINARY_URL"] + "image/upload";
+const presetName = process.env["EXPO_PUBLIC_CLOUDINARY_PRESET_NAME"];
+
 export const uploadImage = async (uri: string) => {
   const formData = new FormData();
+  if (!presetName) {
+    console.warn("EXPO_PUBLIC_CLOUDINARY_PRESET_NAME is not set");
+    return;
+  }
 
   try {
     formData.append("file", {
@@ -8,15 +15,12 @@ export const uploadImage = async (uri: string) => {
       name: "product.jpg",
     } as any);
 
-    formData.append("upload_preset", "xommerce_unsigned");
+    formData.append("upload_preset", presetName);
 
-    const response = await fetch(
-      "https://api.cloudinary.com/v1_1/xvysy0ca/image/upload",
-      {
-        method: "POST",
-        body: formData,
-      },
-    );
+    const response = await fetch(baseUrl, {
+      method: "POST",
+      body: formData,
+    });
 
     const data = await response.json();
     console.log("URL: ", data);

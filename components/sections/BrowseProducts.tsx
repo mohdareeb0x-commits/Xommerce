@@ -4,6 +4,8 @@ import { setCategoryMap } from "@/redux/category/categorySlice";
 import { RootState } from "@/redux/store";
 import { getAllCategories } from "@/service/categroyApi";
 import { GetProducts } from "@/service/productApi";
+import { Category } from "@/types/categoryType";
+import { Product } from "@/types/productsType";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, Text, View } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
@@ -11,42 +13,10 @@ import PaginationButton from "../buttons/PaginationButton";
 import ProductCard from "../cards/ProductCard";
 import LoadingSkeletonSection from "./LoadingSkeletonSection";
 
-interface image {
-  url: string;
-  alt: string;
-  isPrimary: boolean;
-}
-
-export type categories = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string;
-  image: string;
-  icon: string;
-  order: number;
-  isActive: boolean;
-  createdAt: string;
-};
-
-type product = {
-  id: string;
-  sku?: string;
-  tag?: string;
-  name: string;
-  images: image[];
-  rating: number;
-  category: string;
-  description?: string;
-  is_favourite: boolean;
-  price: number;
-  discountedPrice: number;
-  discount: number;
-};
-
 const GetData = async (
-  setProducts: React.Dispatch<React.SetStateAction<product[]>>,
+  setProducts: React.Dispatch<React.SetStateAction<Product[]>>,
   page: number,
+  limit: number,
   limitReached: React.RefObject<boolean>,
   category: string,
   minPrice: string,
@@ -54,9 +24,9 @@ const GetData = async (
   setError: React.Dispatch<React.SetStateAction<boolean | undefined>>,
 ) => {
   try {
-    const [data, limit] = await GetProducts({
+    const [data, limitReach] = await GetProducts({
       page: page,
-      limit: 10,
+      limit: limit,
       minPrice: minPrice,
       maxPrice: maxPrice,
       category: category,
@@ -65,7 +35,7 @@ const GetData = async (
       setProducts([]);
       return;
     }
-    if (limit) {
+    if (limitReach) {
       limitReached.current = true;
     }
     setProducts(data);
@@ -76,7 +46,7 @@ const GetData = async (
 };
 
 const GetCat = async (
-  setCategories: React.Dispatch<React.SetStateAction<categories[]>>,
+  setCategories: React.Dispatch<React.SetStateAction<Category[]>>,
   setError: React.Dispatch<React.SetStateAction<boolean | undefined>>,
 ) => {
   try {
@@ -94,12 +64,18 @@ const GetCat = async (
   }
 };
 
-const BrowseProducts = () => {
+const BrowseProducts = ({
+  limit,
+  screen,
+}: {
+  limit: number;
+  screen: string;
+}) => {
   const limitReached = useRef<boolean>(false);
   const [reloadCount, setReloadCount] = useState(0);
   const [page, setPage] = useState<number>(1);
-  const [products, setProducts] = useState<product[]>([]);
-  const [categories, setCategories] = useState<categories[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<boolean>();
 
@@ -125,12 +101,6 @@ const BrowseProducts = () => {
   }, [reloadCount, isApiUp, error]);
 
   useEffect(() => {
-    if (filter.applied === false) {
-      limitReached.current = false;
-    }
-  }, [filter.applied]);
-
-  useEffect(() => {
     async function getData() {
       setError(false);
       setIsLoading(true);
@@ -138,6 +108,7 @@ const BrowseProducts = () => {
       await GetData(
         setProducts,
         page,
+        limit,
         limitReached,
         filter.category,
         filter.minPrice,
@@ -146,8 +117,9 @@ const BrowseProducts = () => {
       );
       setIsLoading(false);
     }
+    limitReached.current = false;
     getData();
-  }, [page, isApiUp, filter.applied]);
+  }, [page, isApiUp, filter.appliedVersion, filter.applied]);
 
   const categoryMap = useMemo(() => {
     if (isApiUp && !error) {
@@ -155,6 +127,7 @@ const BrowseProducts = () => {
         categories.map((category) => [category.id, category.name]),
       );
     }
+    console.log(categoryMap);
     return {};
   }, [categories, error, isApiUp]);
 
@@ -164,7 +137,7 @@ const BrowseProducts = () => {
 
   if (!isApiUp) {
     return (
-      <View className="items-center gap-2 w-full h-96 justify-center">
+      <View className="items-center self-center gap-2 w-full h-96 justify-center">
         <Text className="text-xl font-bold">OOPS!</Text>
         <Text className="text-xl font-bold">
           Looks like server is having a problem
@@ -181,7 +154,7 @@ const BrowseProducts = () => {
 
   if (error) {
     return (
-      <View className="items-center gap-2 w-full h-96 justify-center">
+      <View className="items-center self-center gap-2 w-full h-96 justify-center">
         <Text className="text-xl font-bold">Unable to connect to server</Text>
         <Pressable
           onPress={() => handleReload()}
@@ -198,7 +171,7 @@ const BrowseProducts = () => {
 
   if (products.length === 0) {
     return (
-      <View className="items-center gap-2 w-full h-96 justify-center">
+      <View className="items-center gap-2 self-center w-full h-96 justify-center">
         <Text className="text-xl font-bold">
           No products matched the search
         </Text>
@@ -300,33 +273,35 @@ const BrowseProducts = () => {
         rating={4.4}
       /> */
       }
-      <View className="w-full">
-        <View className="flex-row gap-5 self-center">
-          <PaginationButton
-            disabled={page === 1}
-            onPress={() => {
-              if (page === 1) {
-                return;
-              }
-              limitReached.current = false;
-              setPage(page - 1);
-            }}
-            left={true}
-          />
-          <PaginationButton
-            disabled={limitReached.current}
-            onPress={() => {
-              if (limitReached.current) {
-                return;
-              }
-              if (!limitReached.current) {
-                setPage(page + 1);
-              }
-            }}
-            left={false}
-          />
+      {screen === "browse" && (
+        <View className="w-full">
+          <View className="flex-row gap-5 self-center">
+            <PaginationButton
+              disabled={page === 1}
+              onPress={() => {
+                if (page === 1) {
+                  return;
+                }
+                limitReached.current = false;
+                setPage(page - 1);
+              }}
+              left={true}
+            />
+            <PaginationButton
+              disabled={limitReached.current}
+              onPress={() => {
+                if (limitReached.current) {
+                  return;
+                }
+                if (!limitReached.current) {
+                  setPage(page + 1);
+                }
+              }}
+              left={false}
+            />
+          </View>
         </View>
-      </View>
+      )}
     </View>
   );
 };
