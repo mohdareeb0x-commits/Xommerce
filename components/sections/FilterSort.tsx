@@ -1,3 +1,4 @@
+import useHealth from "@/hooks/useHealth";
 import {
   setApply,
   setCategory,
@@ -28,6 +29,7 @@ const FilterSort = () => {
   const dispatch = useDispatch();
 
   const [categories, setCategories] = useState<Category[]>([]);
+  const isApiUp = useHealth();
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -44,7 +46,7 @@ const FilterSort = () => {
     };
 
     fetchCategories();
-  }, []);
+  }, [isApiUp]);
 
   return (
     <View className="w-full px-5 flex-row justify-between items-center">

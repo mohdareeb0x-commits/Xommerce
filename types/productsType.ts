@@ -1,4 +1,4 @@
-interface image {
+export interface image {
   url: string;
   alt: string;
   isPrimary: boolean;
@@ -17,4 +17,10 @@ export type Product = {
   price: number;
   discountedPrice: number;
   discount: number;
+  specifications: Specification[];
 };
+
+export interface Specification {
+  key: string;
+  value: string;
+}

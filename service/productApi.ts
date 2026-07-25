@@ -84,3 +84,33 @@ export const CreateProduct = async (data: ProductForm) => {
     return err;
   }
 };
+
+interface GetByIdType {
+  id: string;
+}
+
+export const GetProductById = async (id: string) => {
+  console.log("id is: ", id);
+  const productUrl = new URL(baseUrl + "/id");
+  const data: GetByIdType = {
+    id: id,
+  };
+  productUrl.search = new URLSearchParams(
+    data as unknown as Record<string, string>,
+  ).toString();
+  try {
+    const response = await fetch(productUrl, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error("Unable to get product");
+    }
+    const result = await response.json();
+    return result;
+  } catch {
+    return null;
+  }
+};
