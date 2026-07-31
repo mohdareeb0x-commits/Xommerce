@@ -6,12 +6,51 @@ import ChipScrollView from "@/components/sections/ChipScrollView";
 import FeatureProductsSection from "@/components/sections/FeatureProductsSection";
 import { store } from "@/redux/store";
 import { router } from "expo-router";
+import * as SecureStore from "expo-secure-store";
+import { useEffect } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import "../global.css";
 
+const getAccessToken = async () => {
+  try {
+    const data = await SecureStore.getItemAsync("accessToken");
+    if (data === null) {
+      throw new Error("Can't get the access token");
+    }
+    return data;
+  } catch {
+    return null;
+  }
+};
+
+const getRefreshToken = async () => {
+  try {
+    const data = await SecureStore.getItemAsync("refreshToken");
+    if (data === null) {
+      throw new Error("Can't get the access token");
+    }
+    return data;
+  } catch {
+    return null;
+  }
+};
+
 export default function Index() {
+  useEffect(() => {
+    async function auth() {
+      try {
+        const refreshToken = await getRefreshToken();
+        if (refreshToken === null) {
+          throw new Error("can't get refresh token");
+        }
+      } catch {
+        router.push("/auth/register");
+      }
+    }
+    auth();
+  }, []);
   return (
     <Provider store={store}>
       <SafeAreaView className="flex-1 -mb-10">
