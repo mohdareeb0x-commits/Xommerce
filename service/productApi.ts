@@ -1,4 +1,6 @@
 import { ProductForm } from "@/types/productFormType";
+import { RefreshTokens } from "./refreshTokenService";
+import { getAccessToken } from "./secureStoreService";
 
 interface PostQueryParams {
   page: number;
@@ -25,9 +27,25 @@ export const GetProducts = async (
 
   try {
     const [prodResponse, totalResponse] = await Promise.all([
-      fetch(productUrl, { method: "GET" }),
-      fetch(totalProductsUrl, { method: "GET" }),
+      fetch(productUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${await getAccessToken()}`,
+          "Content-Type": "application/json",
+        },
+      }),
+      fetch(totalProductsUrl, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${await getAccessToken()}`,
+          "Content-Type": "application/json",
+        },
+      }),
     ]);
+
+    if (prodResponse.status === 401 || totalResponse.status === 401) {
+      await RefreshTokens();
+    }
 
     const prodData = await prodResponse.json();
     const totalData = await totalResponse.json();
@@ -53,8 +71,14 @@ export const UpdateProductWishList = async (data: WishlistPostData) => {
   try {
     const response = await fetch(productUrl, {
       method: "POST",
+      headers: {
+        Authorization: `Bearer ${await getAccessToken()}`,
+      },
       body: formData,
     });
+    if (response.status === 401) {
+      await RefreshTokens();
+    }
     if (!response.ok) {
       throw new Error(`Response status: ${response.status}`);
     }
@@ -73,10 +97,14 @@ export const CreateProduct = async (data: ProductForm) => {
     const response = await fetch(baseUrl, {
       method: "POST",
       headers: {
+        Authorization: `Bearer ${await getAccessToken()}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
     });
+    if (response.status === 401) {
+      await RefreshTokens();
+    }
     if (!response.ok) {
       throw new Error("Unable to create product");
     }
@@ -102,9 +130,15 @@ export const GetProductById = async (id: string) => {
     const response = await fetch(productUrl, {
       method: "GET",
       headers: {
+        Authorization: `Bearer ${await getAccessToken()}`,
         "Content-Type": "application/json",
       },
     });
+
+    if (response.status === 401) {
+      await RefreshTokens();
+    }
+
     if (!response.ok) {
       throw new Error("Unable to get product");
     }

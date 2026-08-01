@@ -1,11 +1,52 @@
 import { images } from "@/constants/images";
+import {
+  setEmail,
+  setPassword,
+  setUsername,
+  SignupState,
+} from "@/redux/signup/signupSlice";
+import { RootState } from "@/redux/store";
 import { FontAwesome, Ionicons, Octicons } from "@expo/vector-icons";
 import { router } from "expo-router";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useDispatch, useSelector } from "react-redux";
+
+const handlePressSignUp = (
+  signupForm: SignupState,
+  setformValueEmpty: Dispatch<SetStateAction<boolean>>,
+) => {
+  if (
+    signupForm.email === "" ||
+    signupForm.username === "" ||
+    signupForm.password === ""
+  ) {
+    setformValueEmpty(true);
+    return;
+  }
+  router.push("/auth/otp");
+};
 
 const register = () => {
+  const signupForm = useSelector((state: RootState) => state.signup);
+  const dispatch = useDispatch();
+
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [eyeIcon, setEyeIcon] = useState(false);
+  const [formValueEmpty, setformValueEmpty] = useState(false);
+
+  useEffect(() => {
+    if (
+      signupForm.email !== "" &&
+      signupForm.username !== "" &&
+      signupForm.password !== ""
+    ) {
+      setformValueEmpty(false);
+    }
+  }, [signupForm]);
+
   return (
     <SafeAreaView>
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -37,9 +78,9 @@ const register = () => {
             <View className="flex-row items-center gap-2 w-full border border-gray-300 rounded-2xl px-5">
               <Ionicons name="person" size={20} color="#6b7280" />
               <TextInput
-                className="color-gray-500 text-lg font-gilroyMedium"
-                value=""
-                onChangeText={() => {}}
+                className="color-gray-500 w-full text-lg font-gilroyMedium"
+                value={signupForm.username}
+                onChangeText={(text) => dispatch(setUsername(text))}
                 placeholder="Enter your full name"
               />
             </View>
@@ -51,9 +92,9 @@ const register = () => {
             <View className="flex-row items-center gap-2 w-full border border-gray-300 rounded-2xl px-5">
               <Ionicons name="mail" size={20} color="#6b7280" />
               <TextInput
-                className="color-gray-500 text-lg font-gilroyMedium"
-                value=""
-                onChangeText={() => {}}
+                className="color-gray-500 w-full text-lg font-gilroyMedium"
+                value={signupForm.email}
+                onChangeText={(text) => dispatch(setEmail(text))}
                 placeholder="name@example.com"
               />
             </View>
@@ -65,11 +106,19 @@ const register = () => {
             <View className="flex-row items-center gap-2 w-full border border-gray-300 rounded-2xl px-5">
               <Ionicons name="lock-closed" size={20} color="#6b7280" />
               <TextInput
-                className="color-gray-500 text-lg font-gilroyMedium"
-                value=""
-                onChangeText={() => {}}
+                className="color-gray-500 w-4/5 text-lg font-gilroyMedium"
+                value={signupForm.password}
+                onChangeText={(text) => dispatch(setPassword(text))}
+                secureTextEntry={!eyeIcon}
                 placeholder="Min. 8 characters"
               />
+              <Pressable onPress={() => setEyeIcon(!eyeIcon)}>
+                <Ionicons
+                  name={eyeIcon ? "eye" : "eye-off"}
+                  size={20}
+                  color="#6b7280"
+                />
+              </Pressable>
             </View>
           </View>
           <View className="w-11/12 gap-2">
@@ -79,15 +128,42 @@ const register = () => {
             <View className="flex-row items-center gap-2 w-full border border-gray-300 rounded-2xl px-5">
               <Ionicons name="lock-closed" size={20} color="#6b7280" />
               <TextInput
-                className="color-gray-500 text-lg font-gilroyMedium"
-                value=""
-                onChangeText={() => {}}
+                className="color-gray-500 w-4/5 text-lg font-gilroyMedium"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry={!eyeIcon}
                 placeholder="Repeat Password"
               />
+              <Pressable onPress={() => setEyeIcon(!eyeIcon)}>
+                <Ionicons
+                  name={eyeIcon ? "eye" : "eye-off"}
+                  size={20}
+                  color="#6b7280"
+                />
+              </Pressable>
             </View>
           </View>
+          <View
+            className={
+              signupForm.password !== confirmPassword ? "w-11/12" : "hidden"
+            }
+          >
+            <Text className="font-jost text-sm color-red-400">
+              Password mismatch. Please ensure both password fields match before
+              proceeding.
+            </Text>
+          </View>
+          <View className={formValueEmpty ? "w-11/12" : "hidden"}>
+            <Text className="font-jost text-sm color-red-400">
+              Please fill in all fields.
+            </Text>
+          </View>
+          <View className="w-11/12 gap-3"></View>
           <View className="w-full justify-center items-center gap-3">
-            <Pressable className="flex-row bg-primary p-4 gap-2 justify-center rounded-full w-11/12">
+            <Pressable
+              onPress={() => handlePressSignUp(signupForm, setformValueEmpty)}
+              className="flex-row bg-primary p-4 gap-2 justify-center rounded-full w-11/12"
+            >
               <FontAwesome name="sign-in" size={24} color="white" />
               <Text className="color-white text-lg font-jostSemiBold">
                 Sign Up

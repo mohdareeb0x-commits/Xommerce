@@ -3,6 +3,8 @@ import healthCheckReducer from "./apiHealthCheck/healthCheckSlice";
 import categoryReducer from "./category/categorySlice";
 import chipCattegoryReducer from "./chipCattegory/chipCattegorySlice";
 import filterReducer from "./filter/filterSlice";
+import signinReducer from "./signIn/signinSlice";
+import signupReducer from "./signup/signupSlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,6 +12,8 @@ export const store = configureStore({
     healthCheckReducer: healthCheckReducer,
     filter: filterReducer,
     category: categoryReducer,
+    signup: signupReducer,
+    signin: signinReducer,
   },
 });
 

@@ -5,37 +5,13 @@ import SearchBar from "@/components/inputs/SearchBar";
 import ChipScrollView from "@/components/sections/ChipScrollView";
 import FeatureProductsSection from "@/components/sections/FeatureProductsSection";
 import { store } from "@/redux/store";
+import { getRefreshToken } from "@/service/secureStoreService";
 import { router } from "expo-router";
-import * as SecureStore from "expo-secure-store";
 import { useEffect } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import "../global.css";
-
-const getAccessToken = async () => {
-  try {
-    const data = await SecureStore.getItemAsync("accessToken");
-    if (data === null) {
-      throw new Error("Can't get the access token");
-    }
-    return data;
-  } catch {
-    return null;
-  }
-};
-
-const getRefreshToken = async () => {
-  try {
-    const data = await SecureStore.getItemAsync("refreshToken");
-    if (data === null) {
-      throw new Error("Can't get the access token");
-    }
-    return data;
-  } catch {
-    return null;
-  }
-};
 
 export default function Index() {
   useEffect(() => {
@@ -68,7 +44,7 @@ export default function Index() {
             </View>
             <FeatureProductsSection />
             <PromoBanner />
-            <Pressable onPress={() => router.push("/createProductScreen")}>
+            <Pressable onPress={() => router.push("/auth/register")}>
               <Text>Create Product</Text>
             </Pressable>
           </View>
