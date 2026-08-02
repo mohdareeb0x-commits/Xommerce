@@ -23,10 +23,8 @@ export const uploadImage = async (uri: string) => {
     });
 
     const data = await response.json();
-    console.log("URL: ", data);
     return data.secure_url;
   } catch (err) {
-    console.log("IMAGE UPLOAD ERR", err);
     throw new Error("Unable to upload photos");
   }
 };

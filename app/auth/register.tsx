@@ -6,26 +6,58 @@ import {
   SignupState,
 } from "@/redux/signup/signupSlice";
 import { RootState } from "@/redux/store";
+import { GetOtp } from "@/service/authService";
 import { FontAwesome, Ionicons, Octicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-const handlePressSignUp = (
+const handlePressSignUp = async (
   signupForm: SignupState,
   setformValueEmpty: Dispatch<SetStateAction<boolean>>,
+  setIsLoading: Dispatch<SetStateAction<boolean>>,
 ) => {
+  setIsLoading(true);
   if (
     signupForm.email === "" ||
     signupForm.username === "" ||
     signupForm.password === ""
   ) {
     setformValueEmpty(true);
+    setIsLoading(false);
     return;
   }
+  const request = {
+    email: signupForm.email,
+    username: signupForm.username,
+  };
+
+  const result = await GetOtp(request);
+  if (result && result.error === "email already exists") {
+    Alert.alert("Email already exists. Please use a different email.");
+    setIsLoading(false);
+    return;
+  }
+  if (
+    result &&
+    (result.error === "unable to send otp" || result.error === "bad request")
+  ) {
+    Alert.alert("Error sending OTP. Please try again.");
+    setIsLoading(false);
+    return;
+  }
+  setIsLoading(false);
   router.push("/auth/otp");
 };
 
@@ -35,6 +67,7 @@ const register = () => {
 
   const [confirmPassword, setConfirmPassword] = useState("");
   const [eyeIcon, setEyeIcon] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [formValueEmpty, setformValueEmpty] = useState(false);
 
   useEffect(() => {
@@ -87,7 +120,7 @@ const register = () => {
           </View>
           <View className="w-11/12 gap-2">
             <Text className="font-jostSemiBold text-md color-gray-500">
-              EMAIL
+              EMAIL ADDRESS
             </Text>
             <View className="flex-row items-center gap-2 w-full border border-gray-300 rounded-2xl px-5">
               <Ionicons name="mail" size={20} color="#6b7280" />
@@ -96,6 +129,9 @@ const register = () => {
                 value={signupForm.email}
                 onChangeText={(text) => dispatch(setEmail(text))}
                 placeholder="name@example.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
             </View>
           </View>
@@ -111,6 +147,9 @@ const register = () => {
                 onChangeText={(text) => dispatch(setPassword(text))}
                 secureTextEntry={!eyeIcon}
                 placeholder="Min. 8 characters"
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="password"
               />
               <Pressable onPress={() => setEyeIcon(!eyeIcon)}>
                 <Ionicons
@@ -133,6 +172,9 @@ const register = () => {
                 onChangeText={setConfirmPassword}
                 secureTextEntry={!eyeIcon}
                 placeholder="Repeat Password"
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="password"
               />
               <Pressable onPress={() => setEyeIcon(!eyeIcon)}>
                 <Ionicons
@@ -161,13 +203,22 @@ const register = () => {
           <View className="w-11/12 gap-3"></View>
           <View className="w-full justify-center items-center gap-3">
             <Pressable
-              onPress={() => handlePressSignUp(signupForm, setformValueEmpty)}
+              onPress={() => {
+                handlePressSignUp(signupForm, setformValueEmpty, setIsLoading);
+              }}
               className="flex-row bg-primary p-4 gap-2 justify-center rounded-full w-11/12"
+              disabled={isLoading}
             >
-              <FontAwesome name="sign-in" size={24} color="white" />
-              <Text className="color-white text-lg font-jostSemiBold">
-                Sign Up
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="white" size={22} />
+              ) : (
+                <>
+                  <FontAwesome name="sign-in" size={24} color="white" />
+                  <Text className="color-white text-lg font-jostSemiBold">
+                    Sign Up
+                  </Text>
+                </>
+              )}
             </Pressable>
             <View className="w-5/6 h-[1.5px] bg-gray-300"></View>
             <Pressable className="flex-row border-2 border-primary bg-white p-3 gap-2 justify-center rounded-full w-11/12">

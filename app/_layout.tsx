@@ -17,8 +17,7 @@ import "../lib/cssInterop";
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  console.log(require("../assets/fonts/Gilroy-Bold.ttf"));
-  const [loaded, error] = useFonts({
+  const [loaded] = useFonts({
     Jost_400Regular,
     Jost_500Medium,
     Jost_700Bold,
@@ -31,14 +30,10 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    console.log("fonts loaded changed", loaded);
     if (loaded) SplashScreen.hideAsync();
   }, [loaded]);
-  console.log("layout rendered");
 
   if (!loaded) {
-    console.log("font not loaded");
-    console.log("error", error);
     return null;
   }
 

@@ -1,4 +1,5 @@
 import { ProductForm } from "@/types/productFormType";
+import { apiFetch } from "./api";
 import { RefreshTokens } from "./refreshTokenService";
 import { getAccessToken } from "./secureStoreService";
 
@@ -27,19 +28,11 @@ export const GetProducts = async (
 
   try {
     const [prodResponse, totalResponse] = await Promise.all([
-      fetch(productUrl, {
+      apiFetch(productUrl.toString(), {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${await getAccessToken()}`,
-          "Content-Type": "application/json",
-        },
       }),
-      fetch(totalProductsUrl, {
+      apiFetch(totalProductsUrl.toString(), {
         method: "GET",
-        headers: {
-          Authorization: `Bearer ${await getAccessToken()}`,
-          "Content-Type": "application/json",
-        },
       }),
     ]);
 
@@ -94,17 +87,10 @@ export const UpdateProductWishList = async (data: WishlistPostData) => {
 
 export const CreateProduct = async (data: ProductForm) => {
   try {
-    const response = await fetch(baseUrl, {
+    const response = await apiFetch("/products", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${await getAccessToken()}`,
-        "Content-Type": "application/json",
-      },
       body: JSON.stringify(data),
     });
-    if (response.status === 401) {
-      await RefreshTokens();
-    }
     if (!response.ok) {
       throw new Error("Unable to create product");
     }

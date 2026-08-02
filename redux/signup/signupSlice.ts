@@ -26,10 +26,16 @@ export const signupSlice = createSlice({
     setPassword: (state, action: PayloadAction<string>) => {
       state.password = action.payload;
     },
+    resetSignUp: (state) => {
+      state.username = "";
+      state.email = "";
+      state.password = "";
+    },
   },
 });
 
 // Action creators are generated for each case reducer function
-export const { setEmail, setUsername, setPassword } = signupSlice.actions;
+export const { setEmail, setUsername, setPassword, resetSignUp } =
+  signupSlice.actions;
 
 export default signupSlice.reducer;

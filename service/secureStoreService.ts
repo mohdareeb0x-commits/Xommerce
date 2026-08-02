@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 
 // GET services
@@ -7,7 +8,6 @@ export const getAccessToken = async () => {
     if (data === null) {
       throw new Error("Can't get the access token");
     }
-    console.log("Access token retrieved:", data);
     return data;
   } catch {
     return null;
@@ -20,7 +20,6 @@ export const getRefreshToken = async () => {
     if (data === null) {
       throw new Error("Can't get the refresh token");
     }
-    console.log("Refresh token retrieved:", data);
     return data;
   } catch {
     return null;
@@ -33,7 +32,6 @@ export const getUserID = async () => {
     if (data === null) {
       throw new Error("Can't get the userID");
     }
-    console.log("userID retrieved:", data);
     return data;
   } catch {
     return null;
@@ -44,6 +42,11 @@ export const getUserID = async () => {
 export const setAccessToken = async (accessToken: string) => {
   try {
     await SecureStore.setItemAsync("accessToken", accessToken);
+    const test = getAccessToken();
+    if (!test) {
+      router.replace("/auth/register");
+      throw new Error("Unable to set access token");
+    }
   } catch (error) {
     console.error("Error setting access token:", error);
   }
@@ -52,6 +55,11 @@ export const setAccessToken = async (accessToken: string) => {
 export const setRefreshToken = async (refreshToken: string) => {
   try {
     await SecureStore.setItemAsync("refreshToken", refreshToken);
+    const test = getRefreshToken();
+    if (!test) {
+      router.replace("/auth/register");
+      throw new Error("Unable to set refresh token");
+    }
   } catch (error) {
     console.error("Error setting refresh token:", error);
   }
@@ -60,6 +68,11 @@ export const setRefreshToken = async (refreshToken: string) => {
 export const setUserID = async (userID: string) => {
   try {
     await SecureStore.setItemAsync("userID", userID);
+    const test = getUserID();
+    if (!test) {
+      router.replace("/auth/register");
+      throw new Error("Unable to set userID");
+    }
   } catch (error) {
     console.error("Error setting userID:", error);
   }

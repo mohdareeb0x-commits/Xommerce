@@ -1,20 +1,10 @@
-import { RefreshTokens } from "./refreshTokenService";
-import { getAccessToken } from "./secureStoreService";
+import { apiFetch } from "./api";
 
 const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"] + "/category";
 
 export const getAllCategories = async () => {
   try {
-    const response = await fetch(baseUrl, {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${await getAccessToken()}`,
-        "Content-Type": "application/json",
-      },
-    });
-    if (response.status === 401) {
-      await RefreshTokens();
-    }
+    const response = await apiFetch(baseUrl);
 
     if (!response.ok) {
       throw new Error("Can't fetch categories");
@@ -24,7 +14,6 @@ export const getAllCategories = async () => {
 
     return result;
   } catch (err) {
-    console.log("Category err", err);
     return [];
   }
 };

@@ -1,11 +1,11 @@
 import { router } from "expo-router";
 import {
-    deleteRefreshToken,
-    deleteUserID,
-    getRefreshToken,
-    getUserID,
-    setAccessToken,
-    setRefreshToken,
+  deleteRefreshToken,
+  deleteUserID,
+  getRefreshToken,
+  getUserID,
+  setAccessToken,
+  setRefreshToken,
 } from "./secureStoreService";
 
 const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"] + "/auth";
@@ -41,7 +41,7 @@ export const RefreshTokens = async () => {
 
     if (result.error === "invalid refresh token") {
       Promise.all([await deleteRefreshToken(), await deleteUserID()]);
-      router.push("/auth/logIn");
+      router.replace("/auth/logIn");
       return;
     }
     Promise.all([

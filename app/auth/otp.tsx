@@ -1,86 +1,133 @@
 import OtpInput from "@/components/inputs/OtpInput";
 import { images } from "@/constants/images";
-import { SignupState } from "@/redux/signup/signupSlice";
+import { resetSignUp } from "@/redux/signup/signupSlice";
 import { RootState } from "@/redux/store";
 import { GetOtp, SignUp, VerifyOtp } from "@/service/authService";
 import {
-    setAccessToken,
-    setRefreshToken,
-    setUserID,
+  getAccessToken,
+  getRefreshToken,
+  setAccessToken,
+  setRefreshToken,
+  setUserID,
 } from "@/service/secureStoreService";
 import { MaterialIcons, Octicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useSelector } from "react-redux";
-
-const handleVerifyAndContinue = (
-  signupForm: SignupState,
-  otp: string,
-  setOtpLengthErr: Dispatch<SetStateAction<boolean>>,
-) => {
-  async function verifyOtp() {
-    if (otp.length !== 6) {
-      setOtpLengthErr(true);
-      return;
-    }
-    const request = {
-      email: signupForm.email,
-      otp: otp,
-    };
-    const result = await VerifyOtp(request);
-    if (result) {
-      const result = await SignUp(signupForm);
-      if (result) {
-        const accessTokenString = String(result.accessToken);
-        const refreshTokenString = String(result.refreshToken);
-        const userID = String(result.userID);
-        await setAccessToken(accessTokenString);
-        await setRefreshToken(refreshTokenString);
-        await setUserID(userID);
-
-        router.push("/(tabs)");
-      }
-    }
-  }
-  verifyOtp();
-};
+import { useDispatch, useSelector } from "react-redux";
 
 const otp = () => {
+  const handleVerifyAndContinue = () => {
+    async function verifyOtp() {
+      if (otp.length !== 6) {
+        setOtpLengthErr(true);
+        return;
+      }
+      const request = {
+        email: signupForm.email,
+        otp: otp,
+      };
+      const result = await VerifyOtp(request);
+      if (!result) {
+        Alert.alert("Unable to verify OTP");
+        return;
+      }
+
+      if (result.error) {
+        Alert.alert(result.error);
+        return;
+      }
+      if (result) {
+        const result = await SignUp(signupForm);
+        if (!result) {
+          Alert.alert("Network error");
+          return;
+        }
+
+        if (result.error) {
+          Alert.alert(result.error);
+          return;
+        }
+        if (result) {
+          const accessTokenString = String(result.accessToken);
+          const refreshTokenString = String(result.refreshToken);
+          const userID = String(result.userID);
+
+          await setAccessToken(accessTokenString);
+          const savedAT = await getAccessToken();
+
+          if (!savedAT) {
+            Alert.alert("Unable to save token");
+            return;
+          }
+
+          await setRefreshToken(refreshTokenString);
+          const savedRT = await getRefreshToken();
+
+          if (!savedRT) {
+            Alert.alert("Unable to save token");
+            return;
+          }
+          await setUserID(userID);
+
+          dispatch(resetSignUp());
+          router.replace("/(tabs)");
+        }
+      }
+    }
+    verifyOtp();
+  };
+  const handleResendOTP = async () => {
+    if (secondsLeft > 0 || sendingOTP) {
+      return;
+    }
+
+    setSendingOTP(true);
+
+    try {
+      const result = await GetOtp({
+        email: signupForm.email,
+        username: signupForm.username,
+      });
+
+      if (!result) {
+        Alert.alert("Unable to send OTP");
+        return;
+      }
+
+      if (result.error) {
+        Alert.alert(result.error);
+        return;
+      }
+
+      Alert.alert("OTP sent successfully");
+
+      setSecondsLeft(RESEND_DELAY);
+    } finally {
+      setSendingOTP(false);
+    }
+  };
   const signupForm = useSelector((state: RootState) => state.signup);
+  const dispatch = useDispatch();
 
   const [otp, setOtp] = useState("");
   const [otpLengthErr, setOtpLengthErr] = useState(false);
 
-  useEffect(() => {
-    async function getOtp() {
-      const request = {
-        email: signupForm.email,
-        username: signupForm.username,
-      };
+  const RESEND_DELAY = 60;
 
-      const result = await GetOtp(request);
-      if (result && result.error === "email already exists") {
-        Alert.alert("Email already exists. Please use a different email.");
-        router.push("/auth/register");
-        return;
-      }
-      if (
-        result &&
-        (result.error === "unable to send otp" ||
-          result.error === "bad request")
-      ) {
-        Alert.alert("Error sending OTP. Please try again.");
-        router.push("/auth/register");
-        return;
-      }
-      if (result) {
-        console.log("OTP sent successfully");
-      }
-    }
-    getOtp();
-  }, []);
+  const [secondsLeft, setSecondsLeft] = useState(RESEND_DELAY);
+  const [sendingOTP, setSendingOTP] = useState(false);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+
+    const interval = setInterval(() => {
+      setSecondsLeft((prev) => prev - 1);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [secondsLeft]);
 
   return (
     <SafeAreaView>
@@ -119,18 +166,23 @@ const otp = () => {
           <View className="w-full justify-center items-center gap-3">
             <View className="flex-row gap-1">
               <Text className="font-gilroySemiBold">
-                Didn't receive the code?
+                Didn't receive the OTP?
               </Text>
-              <Pressable onPress={() => router.push("/auth/register")}>
-                <Text className="text-primary font-gilroySemiBold">
-                  Resend Code
+              <Pressable
+                disabled={secondsLeft > 0 || sendingOTP}
+                onPress={handleResendOTP}
+              >
+                <Text className="text-primary font-gilroySemiBold disabled:color-gray-400">
+                  {sendingOTP
+                    ? "Sending..."
+                    : secondsLeft > 0
+                      ? `Resend OTP in ${secondsLeft}s`
+                      : "Resend OTP"}
                 </Text>
               </Pressable>
             </View>
             <Pressable
-              onPress={() =>
-                handleVerifyAndContinue(signupForm, otp, setOtpLengthErr)
-              }
+              onPress={handleVerifyAndContinue}
               className="flex-row bg-primary p-4 gap-2 justify-center items-center rounded-full w-11/12"
             >
               <Text className="color-white text-lg font-jostSemiBold">

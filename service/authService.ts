@@ -1,4 +1,6 @@
-const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"] + "/auth";
+import { getAccessToken } from "./secureStoreService";
+
+const baseUrl = process.env["EXPO_PUBLIC_BASE_URL"];
 
 interface OtpRequest {
   email: string;
@@ -11,7 +13,7 @@ interface OtpResponse {
 }
 export const GetOtp = async (data: OtpRequest) => {
   try {
-    const response = await fetch(baseUrl + "/sendotp", {
+    const response = await fetch(baseUrl + "/auth/sendotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -39,7 +41,7 @@ interface VerifyOtpRequest {
 
 export const VerifyOtp = async (data: VerifyOtpRequest) => {
   try {
-    const response = await fetch(baseUrl + "/verifyotp", {
+    const response = await fetch(baseUrl + "/auth/verifyotp", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -64,15 +66,16 @@ interface SignupRequest {
 }
 
 interface SignupResponse {
-  success: string;
-  accessToken: string;
-  refreshToken: string;
-  userID: string;
+  error?: string;
+  success?: string;
+  accessToken?: string;
+  refreshToken?: string;
+  userID?: string;
 }
 
 export const SignUp = async (data: SignupRequest) => {
   try {
-    const response = await fetch(baseUrl + "/register", {
+    const response = await fetch(baseUrl + "/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -106,7 +109,7 @@ interface SignInResponse {
 
 export const SignIn = async (data: SignInRequest) => {
   try {
-    const response = await fetch(baseUrl + "/login", {
+    const response = await fetch(baseUrl + "/auth/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -120,10 +123,28 @@ export const SignIn = async (data: SignInRequest) => {
     if (!response.ok) {
       throw new Error("Unable to sign in");
     }
-    console.log("SignIn response:", result);
     return result;
   } catch (error) {
     console.error("Error signing in:", error);
+    return null;
+  }
+};
+
+export const GetMe = async () => {
+  try {
+    const response = await fetch(baseUrl + "/user/me", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${await getAccessToken()}`,
+        "Content-Type": "application/json",
+      },
+    });
+    const result: SignInResponse = await response.json();
+    if (!response.ok) {
+      throw new Error("Unable to sign in");
+    }
+    return true;
+  } catch (error) {
     return null;
   }
 };

@@ -1,5 +1,5 @@
 import { images } from "@/constants/images";
-import { SigninState } from "@/redux/signIn/signinSlice";
+import { resetSignIn } from "@/redux/signIn/signinSlice";
 import { setEmail, setPassword } from "@/redux/signup/signupSlice";
 import { RootState } from "@/redux/store";
 import { SignIn } from "@/service/authService";
@@ -10,43 +10,65 @@ import {
 } from "@/service/secureStoreService";
 import { FontAwesome, Ionicons, Octicons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { Image, Pressable, ScrollView, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  View,
+} from "react-native";
 import { TextInput } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 
-const handlePressSignIn = async (
-  signInForm: SigninState,
-  setFieldEmptyErr: Dispatch<SetStateAction<boolean>>,
-  setInvalidCredentialErr: Dispatch<SetStateAction<boolean>>,
-) => {
-  if (signInForm.email === "" || signInForm.password === "") {
-    setFieldEmptyErr(true);
-    return;
-  }
-  const result = await SignIn(signInForm);
-  if (result && result.error === "invalid email or password") {
-    setInvalidCredentialErr(true);
-    return;
-  }
-  if (result) {
-    const accessTokenString = String(result.accessToken);
-    const refreshTokenString = String(result.refreshToken);
-    const userID = String(result.userID);
-    await setAccessToken(accessTokenString);
-    await setRefreshToken(refreshTokenString);
-    await setUserID(userID);
-
-    router.push("/(tabs)");
-  }
-};
-
 const logIn = () => {
+  const handlePressSignIn = async (
+    // signInForm: SigninState,
+    // setFieldEmptyErr: Dispatch<SetStateAction<boolean>>,
+    // setInvalidCredentialErr: Dispatch<SetStateAction<boolean>>,
+    // setIsLoading: Dispatch<SetStateAction<boolean>>,
+  ) => {
+    setIsLoading(true);
+    if (signInForm.email === "" || signInForm.password === "") {
+      setFieldEmptyErr(true);
+      setIsLoading(false);
+      return;
+    }
+    const result = await SignIn(signInForm);
+    if (
+      result &&
+      (!result.accessToken || !result.refreshToken || !result.userID)
+    ) {
+      Alert.alert("Invalid login response");
+      setIsLoading(false);
+      return;
+    }
+    if (result && result.error === "invalid email or password") {
+      setInvalidCredentialErr(true);
+      setIsLoading(false);
+      return;
+    }
+    if (result) {
+      const accessTokenString = String(result.accessToken);
+      const refreshTokenString = String(result.refreshToken);
+      const userID = String(result.userID);
+      await setAccessToken(accessTokenString);
+      await setRefreshToken(refreshTokenString);
+      await setUserID(userID);
+
+      dispatch(resetSignIn());
+      router.replace("/(tabs)");
+    }
+    setIsLoading(false);
+  };
   const signInForm = useSelector((state: RootState) => state.signin);
   const dispatch = useDispatch();
 
   const [fieldEmptyErr, setFieldEmptyErr] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [invalidCredentialErr, setInvalidCredentialErr] = useState(false);
   const [eyeIcon, setEyeIcon] = useState(false);
 
@@ -92,6 +114,9 @@ const logIn = () => {
                 value={signInForm.email}
                 onChangeText={(text) => dispatch(setEmail(text))}
                 placeholder="name@example.com"
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
               />
             </View>
           </View>
@@ -107,6 +132,9 @@ const logIn = () => {
                 onChangeText={(text) => dispatch(setPassword(text))}
                 placeholder="Min. 8 characters"
                 secureTextEntry={!eyeIcon}
+                autoCapitalize="none"
+                autoCorrect={false}
+                textContentType="password"
               />
               <Pressable onPress={() => setEyeIcon(!eyeIcon)}>
                 <Ionicons
@@ -129,19 +157,20 @@ const logIn = () => {
           </View>
           <View className="w-full justify-center items-center gap-3">
             <Pressable
-              onPress={() =>
-                handlePressSignIn(
-                  signInForm,
-                  setFieldEmptyErr,
-                  setInvalidCredentialErr,
-                )
-              }
+              onPress={handlePressSignIn}
+              disabled={isLoading}
               className="flex-row bg-primary p-4 gap-2 justify-center rounded-full w-11/12"
             >
-              <FontAwesome name="sign-in" size={24} color="white" />
-              <Text className="color-white text-lg font-jostSemiBold">
-                Sign In
-              </Text>
+              {isLoading ? (
+                <ActivityIndicator color="white" size={22} />
+              ) : (
+                <>
+                  <FontAwesome name="sign-in" size={24} color="white" />
+                  <Text className="color-white text-lg font-jostSemiBold">
+                    Sign In
+                  </Text>
+                </>
+              )}
             </Pressable>
             <View className="w-5/6 h-[1.5px] bg-gray-300"></View>
             <Pressable className="flex-row border-2 border-primary bg-white p-3 gap-2 justify-center rounded-full w-11/12">

@@ -13,10 +13,10 @@ const useHealth = () => {
   useEffect(() => {
     async function checkApiHealth() {
       const isUp = await getApiHealth();
-      console.log("HEALTH IN Hook: ", isUp);
-      dispatch(changeApiState(isUp));
+      if (isUp !== undefined) {
+        dispatch(changeApiState(isUp));
+      }
     }
-
     checkApiHealth();
   }, [dispatch]);
   return isApiUp;

@@ -5,7 +5,9 @@ import SearchBar from "@/components/inputs/SearchBar";
 import ChipScrollView from "@/components/sections/ChipScrollView";
 import FeatureProductsSection from "@/components/sections/FeatureProductsSection";
 import { store } from "@/redux/store";
-import { getRefreshToken } from "@/service/secureStoreService";
+import { refreshAccessToken } from "@/service/api";
+import { GetMe } from "@/service/authService";
+import { getAccessToken, getRefreshToken } from "@/service/secureStoreService";
 import { router } from "expo-router";
 import { useEffect } from "react";
 import { Pressable, ScrollView, Text, View } from "react-native";
@@ -15,18 +17,24 @@ import "../global.css";
 
 export default function Index() {
   useEffect(() => {
-    async function auth() {
-      try {
-        const refreshToken = await getRefreshToken();
-        if (refreshToken === null) {
-          throw new Error("can't get refresh token");
-        }
-      } catch {
-        router.push("/auth/register");
+    bootstrap();
+  }, []);
+
+  const bootstrap = async () => {
+    const accessToken = await getAccessToken();
+    const refreshToken = await getRefreshToken();
+    if (!accessToken || !refreshToken) {
+      router.replace("/auth/logIn");
+      return;
+    }
+    if (accessToken && refreshToken) {
+      const result = await GetMe();
+      if (!result) {
+        await refreshAccessToken();
       }
     }
-    auth();
-  }, []);
+  };
+
   return (
     <Provider store={store}>
       <SafeAreaView className="flex-1 -mb-10">
