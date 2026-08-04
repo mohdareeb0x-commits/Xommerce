@@ -2,7 +2,6 @@ import HeroBanner from "@/components/cards/HeroBanner";
 import PromoBanner from "@/components/cards/PromoBanner";
 import Header from "@/components/headers/Header";
 import SearchBar from "@/components/inputs/SearchBar";
-import ChipScrollView from "@/components/sections/ChipScrollView";
 import FeatureProductsSection from "@/components/sections/FeatureProductsSection";
 import { store } from "@/redux/store";
 import { refreshAccessToken } from "@/service/api";
@@ -47,9 +46,9 @@ export default function Index() {
           <View className="w-auto items-center gap-5">
             <SearchBar placeHolder="Search electronics..." />
             <HeroBanner />
-            <View className="w-auto ml-1 h-12 flex-row items-center justify-start">
+            {/* <View className="w-auto ml-1 h-12 flex-row items-center justify-start">
               <ChipScrollView />
-            </View>
+            </View> */}
             <FeatureProductsSection />
             <PromoBanner />
             <Pressable onPress={() => router.push("/auth/register")}>

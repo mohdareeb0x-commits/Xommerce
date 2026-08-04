@@ -3,28 +3,33 @@ import { router } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 import { useDispatch } from "react-redux";
 import BrowseProducts from "./BrowseProducts";
+import ChipScrollView from "./ChipScrollView";
 
 const FeatureProductsSection = () => {
   const dispatch = useDispatch();
   return (
-    <View>
-      <View className="flex-row justify-between items-center w-11/12 mb-3">
-        <Text className="text-lg font-jostSemiBold text-slate-800 mb-3">
-          Featured Products
-        </Text>
-        <Pressable
-          onPress={() => {
-            dispatch(toggleSeeAll(true));
-            router.push("/(tabs)/browse");
-          }}
-        >
-          <Text className="text-sm font-jostSemiBold text-blue-600 mb-3">
-            See All
-          </Text>
-        </Pressable>
+    <>
+      <View className="w-auto ml-1 h-12 flex-row items-center justify-start">
+        <ChipScrollView />
       </View>
-      <BrowseProducts limit={8} screen="home" />
-      {/* <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
+      <View>
+        <View className="flex-row justify-between items-center w-11/12 mb-3">
+          <Text className="text-lg font-jostSemiBold text-slate-800 mb-3">
+            Featured Products
+          </Text>
+          <Pressable
+            onPress={() => {
+              dispatch(toggleSeeAll(true));
+              router.push("/(tabs)/browse");
+            }}
+          >
+            <Text className="text-sm font-jostSemiBold text-blue-600 mb-3">
+              See All
+            </Text>
+          </Pressable>
+        </View>
+        <BrowseProducts limit={8} screen="home" />
+        {/* <View className="flex-row flex-wrap justify-between w-11/12 gap-5">
         <ProductCard
           image="https://shopatsc.com/cdn/shop/products/2500x2500_Silver_1.jpg?v=1694415813"
           category="Audio"
@@ -65,7 +70,8 @@ const FeatureProductsSection = () => {
           rating={4.6}
         />
       </View> */}
-    </View>
+      </View>
+    </>
   );
 };
 

@@ -19,7 +19,8 @@
         "monochromeImage": "./assets/images/appLogo.png"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.mohdareeb0xcommits.Xommerce"
     },
     "web": {
       "output": "static",
@@ -48,6 +49,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "bfd4734f-2ec6-4d72-bf9e-560ad0ce755c"
+      }
     }
   }
 }
